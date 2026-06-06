@@ -1,6 +1,6 @@
 import type { NavItem, SectionMeta } from '@/types'
 
-export const SITE_NAME = 'Portfolio'
+export const SITE_NAME = "Dimi's Space"
 export const SITE_TAGLINE = 'Engineer · Researcher · Builder'
 
 export const NAV_ITEMS: NavItem[] = [

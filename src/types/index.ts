@@ -5,8 +5,14 @@ export type {
 } from './navigation'
 
 export type {
+  UniverseSceneId,
+  CharacterVariant,
+  UniverseSceneMeta,
+  UniverseRotationState,
+} from './universe'
+
+export type {
   JourneyMilestone,
-  JourneyMilestoneType,
   ExperienceEntry,
   ExperienceType,
   Project,
