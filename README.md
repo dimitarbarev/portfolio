@@ -98,6 +98,17 @@ Output Directory: dist
 
 No environment variables are required for the contact form.
 
+### Social previews (LinkedIn, X, WhatsApp, Discord)
+
+Set your production URL so Open Graph tags resolve to absolute image and page URLs:
+
+```bash
+# .env.production or Vercel → Environment Variables
+VITE_SITE_URL=https://your-portfolio.vercel.app
+```
+
+SEO title, description, and OG image are configured in `src/data/siteConfig.ts`. The share image is `public/og-image.jpg` (hero scene).
+
 ## Live Portfolio
 
 Add your deployed Vercel URL here.

@@ -4,6 +4,17 @@
  * Update this file when links or the Formspree form change.
  */
 
+export const SITE_SEO = {
+  title: 'Dimitar Barev | Software Engineer & AI Researcher',
+  description:
+    'Portfolio showcasing software engineering projects, AI research, cloud-native systems, OCR benchmarking, and endurance sports achievements.',
+  siteName: 'Dimitar Barev',
+  ogImagePath: '/og-image.jpg',
+  ogImageWidth: 1024,
+  ogImageHeight: 576,
+  twitterCard: 'summary_large_image',
+} as const
+
 export const SITE_LINKS = {
   linkedin: 'https://www.linkedin.com/in/dimitarbarev',
   github: 'https://github.com/dimitarbarev',
