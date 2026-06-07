@@ -18,3 +18,5 @@ export const CONTACT_FIELD_LIMITS = {
   email: 255,
   message: 2000,
 } as const
+
+export const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mqeopyne'

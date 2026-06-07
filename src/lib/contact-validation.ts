@@ -17,6 +17,12 @@ function stripControlChars(value: string) {
   return value.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '')
 }
 
+/** Live input — preserve spaces while typing. */
+export function sanitizeClientInput(value: string, max: number) {
+  return stripControlChars(value).slice(0, max)
+}
+
+/** Submit / validate — trim surrounding whitespace. */
 export function sanitizeClientValue(value: string, max: number) {
   return stripControlChars(value).trim().slice(0, max)
 }

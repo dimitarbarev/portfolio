@@ -9,6 +9,7 @@ import { ScrollReveal } from '@/components/effects/ScrollReveal'
 import { ContactVisual } from '@/components/contact/ContactVisual'
 import { CONTACT_CONNECT_LINKS, CONTACT_FIELD_LIMITS } from '@/data/contact'
 import {
+  sanitizeClientInput,
   sanitizeClientValue,
   validateContactForm,
   type ContactFieldErrors,
@@ -28,6 +29,7 @@ const emptyForm = { name: '', email: '', message: '' }
 
 export function ContactSection() {
   const [form, setForm] = useState(emptyForm)
+  const [honeypot, setHoneypot] = useState('')
   const [errors, setErrors] = useState<ContactFieldErrors>({})
   const [status, setStatus] = useState<FormStatus>('idle')
   const [statusMessage, setStatusMessage] = useState('')
@@ -40,7 +42,7 @@ export function ContactSection() {
         : field === 'email'
           ? CONTACT_FIELD_LIMITS.email
           : CONTACT_FIELD_LIMITS.message
-    setForm((prev) => ({ ...prev, [field]: sanitizeClientValue(value, max) }))
+    setForm((prev) => ({ ...prev, [field]: sanitizeClientInput(value, max) }))
     setErrors((prev) => {
       if (!prev[field]) return prev
       const next = { ...prev }
@@ -70,6 +72,7 @@ export function ContactSection() {
         name: sanitizeClientValue(form.name, CONTACT_FIELD_LIMITS.name),
         email: sanitizeClientValue(form.email, CONTACT_FIELD_LIMITS.email).toLowerCase(),
         message: sanitizeClientValue(form.message, CONTACT_FIELD_LIMITS.message),
+        honeypot,
       })
 
       if (result.success) {
@@ -82,7 +85,6 @@ export function ContactSection() {
 
       setStatus('error')
       setStatusMessage(result.message)
-      if (result.errors) setErrors(result.errors)
     } catch {
       setStatus('error')
       setStatusMessage(
@@ -109,8 +111,25 @@ export function ContactSection() {
             <form
               onSubmit={handleSubmit}
               noValidate
-              className="glass rounded-2xl p-6 md:p-8 space-y-5 w-full h-full"
+              autoComplete="on"
+              className="relative glass rounded-2xl p-6 md:p-8 space-y-5 w-full h-full"
             >
+              <div
+                className="absolute -left-[9999px] h-0 w-0 overflow-hidden"
+                aria-hidden="true"
+              >
+                <label htmlFor="contact-gotcha">Leave this field empty</label>
+                <input
+                  id="contact-gotcha"
+                  name="contact-gotcha"
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="new-password"
+                  value={honeypot}
+                  onChange={(e) => setHoneypot(e.target.value)}
+                />
+              </div>
+
               <div>
                 <label htmlFor="name" className="block text-sm text-text-muted mb-2">
                   Name <span className="text-purple-light">*</span>
