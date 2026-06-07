@@ -98,16 +98,19 @@ Output Directory: dist
 
 No environment variables are required for the contact form.
 
-### Social previews (LinkedIn, X, WhatsApp, Discord)
+### Social previews (LinkedIn, X, Facebook, WhatsApp, Discord)
 
-Set your production URL so Open Graph tags resolve to absolute image and page URLs:
+SEO title, description, and tags are configured in `src/data/siteConfig.ts` and injected at build time via `seo.config.ts`.
+
+The share image is `public/og-image.jpg` (1200×630).
+
+On **Vercel**, absolute Open Graph URLs are resolved automatically from `VERCEL_PROJECT_PRODUCTION_URL`. Optionally override with:
 
 ```bash
-# .env.production or Vercel → Environment Variables
-VITE_SITE_URL=https://your-portfolio.vercel.app
+VITE_SITE_URL=https://your-custom-domain.com
 ```
 
-SEO title, description, and OG image are configured in `src/data/siteConfig.ts`. The share image is `public/og-image.jpg` (hero scene).
+After deploy, refresh LinkedIn’s cache with [Post Inspector](https://www.linkedin.com/post-inspector/).
 
 ## Live Portfolio
 

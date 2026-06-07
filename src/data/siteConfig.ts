@@ -7,11 +7,13 @@
 export const SITE_SEO = {
   title: 'Dimitar Barev | Software Engineer & AI Researcher',
   description:
-    'Portfolio showcasing software engineering projects, AI research, cloud-native systems, OCR benchmarking, and endurance sports achievements.',
+    'Personal portfolio of Dimitar Barev, Software Engineer and AI Researcher. Explore OCR benchmarking research, cloud-native projects, distributed systems, public speaking achievements, endurance sports and professional experience.',
   siteName: 'Dimitar Barev',
   ogImagePath: '/og-image.jpg',
-  ogImageWidth: 1024,
-  ogImageHeight: 576,
+  ogImageWidth: 1200,
+  ogImageHeight: 630,
+  ogImageAlt:
+    'Dimitar Barev — Software Engineer, AI Researcher, Public Speaker, and Endurance Athlete',
   twitterCard: 'summary_large_image',
 } as const
 
