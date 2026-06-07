@@ -107,6 +107,7 @@ export function SceneShowcase() {
 
   const { isDragging, bindDrag, goNext: dragNext, goPrev: dragPrev } = useDragRotation({
     activeIndex,
+    itemCount: UNIVERSE_SCENE_COUNT,
     onIndexChange: setIndexWithDirection,
     onDragStart: () => {
       pause()

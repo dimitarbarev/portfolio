@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import { cn } from '@/utils/cn'
 import { cardHover } from '@/animations/variants'
 
@@ -9,6 +9,7 @@ interface CardProps {
   interactive?: boolean
   glow?: 'purple' | 'blue' | 'none'
   onClick?: () => void
+  style?: CSSProperties
 }
 
 export function Card({
@@ -17,6 +18,7 @@ export function Card({
   interactive = false,
   glow = 'none',
   onClick,
+  style,
 }: CardProps) {
   const glowClasses = {
     purple: 'hover:glow-purple',
@@ -31,6 +33,7 @@ export function Card({
         initial="rest"
         whileHover="hover"
         onClick={onClick}
+        style={style}
         className={cn(
           'glass rounded-2xl p-6 transition-colors duration-300',
           'cursor-pointer hover:border-purple/20',

@@ -1,8 +1,8 @@
 import { useCallback, useRef, useState } from 'react'
-import { UNIVERSE_SCENE_COUNT } from '@/data/universeScenes'
 
 interface UseDragRotationOptions {
   activeIndex: number
+  itemCount: number
   onIndexChange: (index: number) => void
   onDragStart?: () => void
   onDragEnd?: () => void
@@ -11,6 +11,7 @@ interface UseDragRotationOptions {
 
 export function useDragRotation({
   activeIndex,
+  itemCount,
   onIndexChange,
   onDragStart,
   onDragEnd,
@@ -50,16 +51,16 @@ export function useDragRotation({
 
     if (Math.abs(delta) > threshold) {
       if (delta > 0) {
-        onIndexChange((activeIndex - 1 + UNIVERSE_SCENE_COUNT) % UNIVERSE_SCENE_COUNT)
+        onIndexChange((activeIndex - 1 + itemCount) % itemCount)
       } else {
-        onIndexChange((activeIndex + 1) % UNIVERSE_SCENE_COUNT)
+        onIndexChange((activeIndex + 1) % itemCount)
       }
     }
 
     setDragOffset(0)
     accumulatedRef.current = 0
     onDragEnd?.()
-  }, [isDragging, activeIndex, onIndexChange, onDragEnd])
+  }, [isDragging, activeIndex, itemCount, onIndexChange, onDragEnd])
 
   const bindDrag = useCallback(
     () => ({
@@ -78,7 +79,7 @@ export function useDragRotation({
     dragOffset,
     isDragging,
     bindDrag,
-    goNext: () => onIndexChange((activeIndex + 1) % UNIVERSE_SCENE_COUNT),
-    goPrev: () => onIndexChange((activeIndex - 1 + UNIVERSE_SCENE_COUNT) % UNIVERSE_SCENE_COUNT),
+    goNext: () => onIndexChange((activeIndex + 1) % itemCount),
+    goPrev: () => onIndexChange((activeIndex - 1 + itemCount) % itemCount),
   }
 }

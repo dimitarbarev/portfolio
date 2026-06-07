@@ -4,9 +4,7 @@ import {
   JourneySection,
   ExperienceSection,
   ProjectLabSection,
-  ResearchSection,
   SkillsSection,
-  LeadershipSection,
   AthleticsSection,
   DigitalDeskSection,
   ContactSection,
@@ -19,9 +17,7 @@ export function HomePage() {
       <JourneySection />
       <ExperienceSection />
       <ProjectLabSection />
-      <ResearchSection />
       <SkillsSection />
-      <LeadershipSection />
       <AthleticsSection />
       <DigitalDeskSection />
       <ContactSection />

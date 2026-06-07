@@ -4,6 +4,7 @@ import { AUTO_ROTATION_INTERVAL_MS, AUTO_ROTATION_RESUME_MS } from '@/data/unive
 interface UseAutoRotationOptions {
   onTick: () => void
   enabled: boolean
+  intervalMs?: number
   onPause?: () => void
   onResume?: () => void
 }
@@ -11,6 +12,7 @@ interface UseAutoRotationOptions {
 export function useAutoRotation({
   onTick,
   enabled,
+  intervalMs = AUTO_ROTATION_INTERVAL_MS,
   onPause,
   onResume,
 }: UseAutoRotationOptions) {
@@ -35,8 +37,8 @@ export function useAutoRotation({
   const startRotation = useCallback(() => {
     clearTimers()
     if (pausedRef.current) return
-    intervalRef.current = setInterval(() => onTickRef.current(), AUTO_ROTATION_INTERVAL_MS)
-  }, [clearTimers])
+    intervalRef.current = setInterval(() => onTickRef.current(), intervalMs)
+  }, [clearTimers, intervalMs])
 
   const pause = useCallback(() => {
     pausedRef.current = true

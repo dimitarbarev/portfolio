@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   FileText,
   Code2,
@@ -9,12 +9,16 @@ import {
   GraduationCap,
   Award,
   ExternalLink,
+  Download,
+  X,
+  Clock,
 } from 'lucide-react'
 import { Container } from '@/components/ui/Container'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { SectionWrapper } from '@/layouts/SectionWrapper'
 import { ScrollReveal } from '@/components/effects/ScrollReveal'
-import { PLACEHOLDER_DESK } from '@/data/placeholders'
+import { DESK_RESOURCES } from '@/data/desk'
+import type { DeskResource } from '@/types'
 import { useExploration } from '@/context/ExplorationContext'
 import { cn } from '@/utils/cn'
 
@@ -28,9 +32,162 @@ const iconMap: Record<string, typeof FileText> = {
   award: Award,
 }
 
+function ComingSoonModal({
+  resource,
+  onClose,
+}: {
+  resource: DeskResource
+  onClose: () => void
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[90] flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <div className="absolute inset-0 bg-void/90 backdrop-blur-md" />
+      <motion.div
+        initial={{ opacity: 0, y: 24, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 12, scale: 0.98 }}
+        transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-sm glass-strong rounded-2xl p-6 text-center"
+      >
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 p-1.5 text-text-muted hover:text-text-primary transition-colors"
+          aria-label="Close"
+        >
+          <X className="h-4 w-4" />
+        </button>
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-purple/15 text-purple-light">
+          <Clock className="h-6 w-6" />
+        </div>
+        <h3 className="font-display text-xl font-semibold text-text-primary">
+          Coming Soon
+        </h3>
+        <p className="text-sm text-text-secondary mt-2 leading-relaxed">
+          <span className="text-purple-light">{resource.label}</span> will be
+          available here soon. Check back later!
+        </p>
+        <button
+          onClick={onClose}
+          className="mt-6 rounded-lg px-5 py-2.5 text-sm font-medium text-purple-light bg-purple/15 hover:bg-purple/25 transition-colors"
+        >
+          Got it
+        </button>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+function DeskCard({
+  resource,
+  isHovered,
+  onHover,
+  onClick,
+}: {
+  resource: DeskResource
+  isHovered: boolean
+  onHover: (id: string | null) => void
+  onClick: (resource: DeskResource) => void
+}) {
+  const Icon = iconMap[resource.icon] ?? FileText
+  const isDownload = resource.action === 'download'
+  const isExternal = resource.action === 'link'
+  const isComingSoon = resource.action === 'coming-soon'
+  const isCenteredRow = resource.grid?.colSpan === 2
+
+  const cardClass = cn(
+    'group flex items-center gap-4 rounded-xl p-4 transition-all duration-300 w-full',
+    'border border-transparent hover:border-purple/20 hover:bg-purple/5 cursor-pointer',
+    isCenteredRow && 'max-w-md mx-auto',
+  )
+
+  const content = (
+    <>
+      <div
+        className={cn(
+          'flex h-11 w-11 items-center justify-center rounded-lg transition-colors shrink-0',
+          isHovered
+            ? 'bg-purple/20 text-purple-light'
+            : 'bg-void-surface text-text-muted',
+        )}
+      >
+        <Icon className="h-5 w-5" />
+      </div>
+      <div className="flex-1 min-w-0 text-left">
+        <div className="flex items-center gap-2">
+          <span className="font-medium text-text-primary truncate">
+            {resource.label}
+          </span>
+          {isDownload ? (
+            <Download className="h-3 w-3 text-text-muted opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+          ) : isComingSoon ? null : (
+            <ExternalLink className="h-3 w-3 text-text-muted opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+          )}
+        </div>
+        <p className="text-xs text-text-muted truncate">{resource.description}</p>
+      </div>
+      <span className="text-[10px] uppercase tracking-widest text-text-muted hidden sm:block shrink-0">
+        {resource.category}
+      </span>
+    </>
+  )
+
+  if (isComingSoon) {
+    return (
+      <motion.button
+        type="button"
+        initial={{ opacity: 0, y: 10 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        onMouseEnter={() => onHover(resource.id)}
+        onMouseLeave={() => onHover(null)}
+        whileHover={{ x: 4 }}
+        onClick={() => onClick(resource)}
+        className={cardClass}
+      >
+        {content}
+      </motion.button>
+    )
+  }
+
+  return (
+    <motion.a
+      href={resource.href}
+      initial={{ opacity: 0, y: 10 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      onMouseEnter={() => onHover(resource.id)}
+      onMouseLeave={() => onHover(null)}
+      whileHover={{ x: 4 }}
+      onClick={() => onClick(resource)}
+      download={isDownload ? resource.downloadFilename : undefined}
+      target={isExternal ? '_blank' : undefined}
+      rel={isExternal ? 'noopener noreferrer' : undefined}
+      className={cardClass}
+    >
+      {content}
+    </motion.a>
+  )
+}
+
 export function DigitalDeskSection() {
   const [hoveredId, setHoveredId] = useState<string | null>(null)
+  const [comingSoonResource, setComingSoonResource] = useState<DeskResource | null>(
+    null,
+  )
   const { discover } = useExploration()
+
+  const handleResourceClick = (resource: DeskResource) => {
+    if (resource.action === 'coming-soon') {
+      setComingSoonResource(resource)
+    }
+  }
 
   return (
     <SectionWrapper id="desk" className="section-padding bg-void-elevated">
@@ -38,7 +195,7 @@ export function DigitalDeskSection() {
         <SectionHeader
           label="Digital Desk"
           title="Your command center"
-          description="CV, GitHub, research papers, certifications — an interactive resource hub. Click to explore."
+          description="CV, profiles, writing, and credentials — an interactive resource hub. Click to explore."
           storyBeat="Future Vision"
           align="center"
         />
@@ -62,52 +219,30 @@ export function DigitalDeskSection() {
                 </span>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2">
-                {PLACEHOLDER_DESK.map((resource, i) => {
-                  const Icon = iconMap[resource.icon] ?? FileText
-                  const isHovered = hoveredId === resource.id
-
+              <div className="grid grid-cols-2 gap-3">
+                {DESK_RESOURCES.map((resource) => {
+                  const grid = resource.grid ?? { row: 1, col: 1 }
                   return (
-                    <motion.a
+                    <div
                       key={resource.id}
-                      href={resource.href}
-                      initial={{ opacity: 0, y: 10 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: i * 0.05 }}
-                      onMouseEnter={() => setHoveredId(resource.id)}
-                      onMouseLeave={() => setHoveredId(null)}
-                      whileHover={{ x: 4 }}
+                      style={{
+                        gridRow: grid.row,
+                        gridColumn:
+                          grid.colSpan === 2
+                            ? '1 / -1'
+                            : `${grid.col} / ${grid.col + 1}`,
+                      }}
                       className={cn(
-                        'group flex items-center gap-4 rounded-xl p-4 transition-all duration-300',
-                        'border border-transparent hover:border-purple/20 hover:bg-purple/5',
+                        grid.colSpan === 2 && 'flex justify-center',
                       )}
                     >
-                      <div
-                        className={cn(
-                          'flex h-11 w-11 items-center justify-center rounded-lg transition-colors',
-                          isHovered
-                            ? 'bg-purple/20 text-purple-light'
-                            : 'bg-void-surface text-text-muted',
-                        )}
-                      >
-                        <Icon className="h-5 w-5" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-text-primary truncate">
-                            {resource.label}
-                          </span>
-                          <ExternalLink className="h-3 w-3 text-text-muted opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
-                        </div>
-                        <p className="text-xs text-text-muted truncate">
-                          {resource.description}
-                        </p>
-                      </div>
-                      <span className="text-[10px] uppercase tracking-widest text-text-muted hidden sm:block">
-                        {resource.category}
-                      </span>
-                    </motion.a>
+                      <DeskCard
+                        resource={resource}
+                        isHovered={hoveredId === resource.id}
+                        onHover={setHoveredId}
+                        onClick={handleResourceClick}
+                      />
+                    </div>
                   )
                 })}
               </div>
@@ -115,6 +250,15 @@ export function DigitalDeskSection() {
           </div>
         </ScrollReveal>
       </Container>
+
+      <AnimatePresence>
+        {comingSoonResource && (
+          <ComingSoonModal
+            resource={comingSoonResource}
+            onClose={() => setComingSoonResource(null)}
+          />
+        )}
+      </AnimatePresence>
     </SectionWrapper>
   )
 }
