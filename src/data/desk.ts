@@ -1,4 +1,5 @@
 import type { DeskResource } from '@/types'
+import { SITE_CV, SITE_LINKS } from '@/data/siteConfig'
 
 export const DESK_RESOURCES: DeskResource[] = [
   {
@@ -6,7 +7,7 @@ export const DESK_RESOURCES: DeskResource[] = [
     label: 'LinkedIn',
     description: 'Professional network & experience',
     icon: 'linkedin',
-    href: 'https://www.linkedin.com/in/dimitarbarev',
+    href: SITE_LINKS.linkedin,
     category: 'social',
     action: 'link',
     grid: { row: 1, col: 1 },
@@ -16,10 +17,10 @@ export const DESK_RESOURCES: DeskResource[] = [
     label: 'CV / Resume',
     description: 'Downloadable professional summary',
     icon: 'file-text',
-    href: '/Dimitar_Barev_Resume.pdf',
+    href: SITE_CV.path,
     category: 'professional',
     action: 'download',
-    downloadFilename: 'Dimitar_Barev_Resume.pdf',
+    downloadFilename: SITE_CV.downloadFilename,
     grid: { row: 1, col: 2 },
   },
   {
@@ -27,7 +28,7 @@ export const DESK_RESOURCES: DeskResource[] = [
     label: 'Strava',
     description: 'Athletic achievements & training',
     icon: 'activity',
-    href: 'https://www.strava.com/athletes/138482201',
+    href: SITE_LINKS.strava,
     category: 'athletic',
     action: 'link',
     grid: { row: 2, col: 1 },
@@ -37,7 +38,7 @@ export const DESK_RESOURCES: DeskResource[] = [
     label: 'Medium',
     description: 'Technical writing & essays',
     icon: 'book-open',
-    href: 'https://medium.com/@mitkobarev',
+    href: SITE_LINKS.medium,
     category: 'research',
     action: 'link',
     grid: { row: 2, col: 2 },
@@ -47,7 +48,7 @@ export const DESK_RESOURCES: DeskResource[] = [
     label: 'GitHub',
     description: 'Open source contributions & projects',
     icon: 'github',
-    href: 'https://github.com/dimitarbarev',
+    href: SITE_LINKS.github,
     category: 'social',
     action: 'link',
     grid: { row: 3, col: 1 },

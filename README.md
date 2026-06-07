@@ -51,15 +51,17 @@ The contact form is powered by Formspree and does not require a custom backend.
 Create a Formspree form and update the endpoint in:
 
 ```text
-src/data/contact.ts
+src/data/siteConfig.ts
 ```
 
 Example:
 
 ```ts
 export const FORMSPREE_ENDPOINT =
-  "https://formspree.io/f/mqeopyne";
+  "https://formspree.io/f/your-form-id";
 ```
+
+Personal links (LinkedIn, GitHub, Medium, Strava, CV path) live in the same file. Contact delivery is handled by Formspree only — no email address is embedded in the frontend.
 
 ### Features
 
@@ -106,6 +108,4 @@ Add your deployed Vercel URL here.
 
 Software Engineer • AI Researcher • Endurance Athlete
 
-* LinkedIn: https://linkedin.com/in/dimitarbarev
-* GitHub: https://github.com/dimitarbarev
-* Medium: https://medium.com/@mitkobarev
+Public links are configured in `src/data/siteConfig.ts`.
