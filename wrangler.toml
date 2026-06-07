@@ -1,9 +1,0 @@
-name = "portfolio"
-compatibility_date = "2024-08-01"
-pages_build_output_dir = "dist"
-
-# Bind KV for persistent per-IP rate limiting in production.
-# Create a namespace in Cloudflare dashboard, then set the id below.
-# [[kv_namespaces]]
-# binding = "RATE_LIMIT_KV"
-# id = "your_kv_namespace_id"
