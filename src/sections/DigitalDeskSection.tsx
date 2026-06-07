@@ -20,6 +20,7 @@ import { ScrollReveal } from '@/components/effects/ScrollReveal'
 import { DESK_RESOURCES } from '@/data/desk'
 import type { DeskResource } from '@/types'
 import { useExploration } from '@/context/ExplorationContext'
+import { useIsMobile } from '@/hooks/useMediaQuery'
 import { cn } from '@/utils/cn'
 
 const iconMap: Record<string, typeof FileText> = {
@@ -104,7 +105,7 @@ function DeskCard({
   const cardClass = cn(
     'group flex items-center gap-4 rounded-xl p-4 transition-all duration-300 w-full',
     'border border-transparent hover:border-purple/20 hover:bg-purple/5 cursor-pointer',
-    isCenteredRow && 'max-w-md mx-auto',
+    isCenteredRow && 'md:max-w-md md:mx-auto',
   )
 
   const content = (
@@ -121,7 +122,7 @@ function DeskCard({
       </div>
       <div className="flex-1 min-w-0 text-left">
         <div className="flex items-center gap-2">
-          <span className="font-medium text-text-primary truncate">
+          <span className="font-medium text-text-primary max-md:whitespace-normal md:truncate">
             {resource.label}
           </span>
           {isDownload ? (
@@ -130,7 +131,9 @@ function DeskCard({
             <ExternalLink className="h-3 w-3 text-text-muted opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
           )}
         </div>
-        <p className="text-xs text-text-muted truncate">{resource.description}</p>
+        <p className="text-xs text-text-muted max-md:whitespace-normal md:truncate">
+          {resource.description}
+        </p>
       </div>
       <span className="text-[10px] uppercase tracking-widest text-text-muted hidden sm:block shrink-0">
         {resource.category}
@@ -182,6 +185,7 @@ export function DigitalDeskSection() {
     null,
   )
   const { discover } = useExploration()
+  const isMobile = useIsMobile()
 
   const handleResourceClick = (resource: DeskResource) => {
     if (resource.action === 'coming-soon') {
@@ -219,21 +223,24 @@ export function DigitalDeskSection() {
                 </span>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {DESK_RESOURCES.map((resource) => {
                   const grid = resource.grid ?? { row: 1, col: 1 }
-                  return (
-                    <div
-                      key={resource.id}
-                      style={{
+                  const desktopGridStyle = isMobile
+                    ? undefined
+                    : {
                         gridRow: grid.row,
                         gridColumn:
                           grid.colSpan === 2
                             ? '1 / -1'
                             : `${grid.col} / ${grid.col + 1}`,
-                      }}
+                      }
+                  return (
+                    <div
+                      key={resource.id}
+                      style={desktopGridStyle}
                       className={cn(
-                        grid.colSpan === 2 && 'flex justify-center',
+                        grid.colSpan === 2 && 'md:flex md:justify-center',
                       )}
                     >
                       <DeskCard
