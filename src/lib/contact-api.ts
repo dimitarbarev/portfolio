@@ -1,4 +1,4 @@
-import { FORMSPREE_ENDPOINT } from '@/data/contact'
+import { FORMSPREE_ENDPOINT } from '@/data/siteConfig'
 
 export type ContactApiSuccess = {
   success: true
