@@ -1,56 +1,111 @@
-# Dimitar Barev — Portfolio
+# Dimitar Barev Portfolio
 
-Interactive personal portfolio built with React, TypeScript, Vite, and Tailwind CSS.
+Interactive personal portfolio showcasing software engineering projects, AI research, endurance sports achievements, and professional experience.
 
-## Local development
+## Tech Stack
+
+* React
+* TypeScript
+* Vite
+* Tailwind CSS
+* Framer Motion
+* Formspree
+* Vercel
+
+## Features
+
+* Interactive project case studies
+* OCR research showcase
+* Enterprise software engineering projects
+* Athletics and endurance achievements
+* Responsive design
+* Contact form integration
+* Smooth animations and modern UI
+
+## Getting Started
+
+### Install dependencies
 
 ```bash
 npm install
+```
+
+### Run locally
+
+```bash
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173).
+Open:
 
-## Contact form (Formspree)
+```text
+http://localhost:5173
+```
 
-The contact form uses [Formspree](https://formspree.io) — no custom backend or API keys in the frontend.
+## Contact Form
 
-### Setup
+The contact form is powered by Formspree and does not require a custom backend.
 
-1. **Create a Formspree account** at [formspree.io](https://formspree.io).
-2. **Create a new form** in the Formspree dashboard.
-3. Set the notification email to your private inbox (e.g. `mitkobarev@gmail.com`).
-4. **Copy the form endpoint** — it looks like:
-   ```
-   https://formspree.io/f/abcxyz123
-   ```
-5. The form endpoint is configured in `src/data/contact.ts`:
-   ```ts
-   export const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mqeopyne'
-   ```
-6. **Test locally** — fill out the Contact section and submit. Check Formspree logs and your inbox.
-7. **Deploy to Vercel** — push to GitHub and import the repo in [Vercel](https://vercel.com). No environment variables are required for the contact form.
+### Configuration
 
-### Form behaviour
+Create a Formspree form and update the endpoint in:
 
-- Fields: name, email, message (with client-side validation)
-- Hidden honeypot field for basic spam protection
-- Submissions are handled by Formspree — nothing is stored in a database by this project
+```text
+src/data/contact.ts
+```
+
+Example:
+
+```ts
+export const FORMSPREE_ENDPOINT =
+  "https://formspree.io/f/mqeopyne";
+```
+
+### Features
+
+* Name, email, and message validation
+* Spam protection via honeypot field
+* Direct email notifications
+* No database required
 
 ## Build
 
 ```bash
 npm run build
+```
+
+Preview production build:
+
+```bash
 npm run preview
 ```
 
-## Deploy to Vercel
+## Deployment
 
-1. Push the repository to GitHub.
-2. In Vercel: **Add New Project** → import the repo.
-3. Framework preset: **Vite**
-4. Build command: `npm run build`
-5. Output directory: `dist`
-6. Deploy.
+This project is optimized for Vercel deployment.
 
-After deployment, test the contact form on your live URL.
+1. Push the repository to GitHub
+2. Import the repository into Vercel
+3. Deploy using:
+
+```text
+Framework: Vite
+Build Command: npm run build
+Output Directory: dist
+```
+
+No environment variables are required for the contact form.
+
+## Live Portfolio
+
+Add your deployed Vercel URL here.
+
+## Author
+
+**Dimitar Barev**
+
+Software Engineer • AI Researcher • Endurance Athlete
+
+* LinkedIn: https://linkedin.com/in/dimitarbarev
+* GitHub: https://github.com/dimitarbarev
+* Medium: https://medium.com/@mitkobarev
