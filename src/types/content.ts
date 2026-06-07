@@ -43,28 +43,32 @@ export interface ExperienceEntry {
 
 export type ProjectTab = 'overview' | 'architecture' | 'outcomes' | 'learnings'
 
+export type ProjectGlow = 'enterprise' | 'research' | 'cloud'
+
+export interface ProjectImage {
+  src: string
+  alt: string
+}
+
 export interface Project {
   id: string
   title: string
   subtitle: string
   category: string
+  organization?: string
+  /** External landing page for the organization badge */
+  organizationLink?: string
   year: string
   description: string
   tags: string[]
   featured?: boolean
+  /** Brand accent color (hex) for glow and highlights */
+  accent?: string
+  /** Visual glow treatment for the card */
+  glow?: ProjectGlow
+  coverImage: string
+  images: ProjectImage[]
   tabs: Record<ProjectTab, string>
-}
-
-export type ResearchType = 'thesis' | 'paper' | 'experiment' | 'benchmark'
-
-export interface ResearchItem {
-  id: string
-  type: ResearchType
-  title: string
-  year: string
-  abstract: string
-  tags: string[]
-  status: 'published' | 'in-progress' | 'preprint'
 }
 
 export type SkillCategory =
@@ -75,34 +79,48 @@ export type SkillCategory =
   | 'devops'
   | 'architecture'
   | 'leadership'
+  | 'personal'
+
+export type SkillCluster =
+  | 'center'
+  | 'engineering'
+  | 'ai'
+  | 'cloud'
+  | 'leadership'
+  | 'personal'
 
 export interface SkillNode {
   id: string
   name: string
   category: SkillCategory
+  cluster: SkillCluster
   x: number
   y: number
   connections: string[]
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'sm' | 'md' | 'lg' | 'xl'
+  description?: string
+  /** Override category color for special nodes */
+  accentColor?: string
 }
 
-export interface LeadershipItem {
-  id: string
-  type: 'speaking' | 'mentoring' | 'toastmasters' | 'team'
-  title: string
-  period: string
-  description: string
-  metric?: string
-}
+export type AthleticDiscipline = 'running' | 'swimming' | 'cycling' | 'trail'
 
 export interface AthleticAchievement {
   id: string
-  type: 'running' | 'triathlon' | 'ironman' | 'endurance'
+  discipline: AthleticDiscipline
   title: string
   date: string
   metric: string
+  centerLabel: string
+  centerSubtext: string
   description: string
+  /** Optional inline link shown in the description */
+  link?: { href: string; label: string }
+  /** Optional Strava or race screenshot */
+  image?: string
 }
+
+export type DeskAction = 'link' | 'download' | 'coming-soon'
 
 export interface DeskResource {
   id: string
@@ -111,6 +129,10 @@ export interface DeskResource {
   icon: string
   href: string
   category: 'professional' | 'social' | 'research' | 'athletic'
+  action?: DeskAction
+  /** Grid placement: row (1-based), column (1-based), optional col span */
+  grid?: { row: number; col: number; colSpan?: number }
+  downloadFilename?: string
 }
 
 export interface SocialLink {
