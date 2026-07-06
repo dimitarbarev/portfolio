@@ -54,13 +54,13 @@ export const DESK_RESOURCES: DeskResource[] = [
     grid: { row: 3, col: 1 },
   },
   {
-    id: 'research-papers',
-    label: 'Research Papers',
-    description: 'Publications & preprints',
+    id: 'publications',
+    label: 'Publications',
+    description: 'Articles, papers & preprints',
     icon: 'graduation-cap',
     href: '#',
     category: 'research',
-    action: 'coming-soon',
+    action: 'publications',
     grid: { row: 3, col: 2 },
   },
   {

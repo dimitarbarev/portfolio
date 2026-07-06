@@ -90,6 +90,8 @@ export const PROJECTS: Project[] = [
       learnings:
         '- OCR technologies\n- AI evaluation methodologies\n- Experimental research\n- Performance benchmarking\n- Computer vision\n- Data-driven decision making',
     },
+    publicationLink:
+      'https://medium.com/@mitkobarev/a-reproducible-ocr-benchmarking-system-for-scanned-car-repair-invoices-fff3f80c06f1',
   },
   {
     id: 'dimotion',

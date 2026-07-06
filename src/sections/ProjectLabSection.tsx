@@ -1,6 +1,15 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, ArrowUpRight, Layers, GitBranch, Target, Lightbulb, Sparkles } from 'lucide-react'
+import {
+  X,
+  ArrowUpRight,
+  Layers,
+  GitBranch,
+  Target,
+  Lightbulb,
+  Sparkles,
+  BookOpen,
+} from 'lucide-react'
 import { Container } from '@/components/ui/Container'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { SectionWrapper } from '@/layouts/SectionWrapper'
@@ -310,6 +319,18 @@ function ProjectModal({
               </button>
             )
           })}
+          {project.publicationLink && (
+            <a
+              href={project.publicationLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm text-text-muted transition-all hover:text-text-secondary"
+            >
+              <BookOpen className="h-4 w-4" />
+              Publication
+              <ArrowUpRight className="h-3.5 w-3.5 opacity-70" />
+            </a>
+          )}
         </div>
 
         <AnimatePresence mode="wait">

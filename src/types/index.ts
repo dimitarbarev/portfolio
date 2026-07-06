@@ -26,6 +26,7 @@ export type {
   AthleticDiscipline,
   DeskResource,
   DeskAction,
+  Publication,
   SocialLink,
   ContactField,
 } from './content'

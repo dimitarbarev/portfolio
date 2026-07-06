@@ -18,7 +18,8 @@ import { SectionHeader } from '@/components/ui/SectionHeader'
 import { SectionWrapper } from '@/layouts/SectionWrapper'
 import { ScrollReveal } from '@/components/effects/ScrollReveal'
 import { DESK_RESOURCES } from '@/data/desk'
-import type { DeskResource } from '@/types'
+import { PUBLICATIONS } from '@/data/publications'
+import type { DeskResource, Publication } from '@/types'
 import { useExploration } from '@/context/ExplorationContext'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import { cn } from '@/utils/cn'
@@ -31,6 +32,98 @@ const iconMap: Record<string, typeof FileText> = {
   activity: Activity,
   'graduation-cap': GraduationCap,
   award: Award,
+}
+
+function PublicationsModal({ onClose }: { onClose: () => void }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[90] flex items-center justify-center p-4 md:p-8"
+      onClick={onClose}
+    >
+      <div className="absolute inset-0 bg-void/90 backdrop-blur-md" />
+      <motion.div
+        initial={{ opacity: 0, y: 24, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 12, scale: 0.98 }}
+        transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-2xl max-h-[85vh] overflow-y-auto glass-strong rounded-2xl p-6 md:p-8"
+        style={{
+          boxShadow:
+            '0 40px 100px -30px rgba(168,85,247,0.2), inset 0 1px 0 rgba(255,255,255,0.08)',
+        }}
+      >
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 p-1.5 text-text-muted hover:text-text-primary transition-colors z-10"
+          aria-label="Close"
+        >
+          <X className="h-4 w-4" />
+        </button>
+
+        <div className="flex items-center gap-3 mb-6 pr-8">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-purple/15 text-purple-light shrink-0">
+            <GraduationCap className="h-5 w-5" />
+          </div>
+          <div>
+            <h3 className="font-display text-xl md:text-2xl font-semibold text-text-primary">
+              Publications
+            </h3>
+            <p className="text-sm text-text-muted mt-0.5">
+              Articles, papers & preprints
+            </p>
+          </div>
+        </div>
+
+        <ol className="space-y-4">
+          {PUBLICATIONS.map((publication, index) => (
+            <PublicationItem key={publication.id} publication={publication} index={index} />
+          ))}
+        </ol>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+function PublicationItem({
+  publication,
+  index,
+}: {
+  publication: Publication
+  index: number
+}) {
+  return (
+    <motion.li
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.08 }}
+    >
+      <a
+        href={publication.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group block rounded-xl border border-border-subtle p-5 transition-all hover:border-purple/30 hover:bg-purple/5"
+      >
+        <p className="text-sm text-text-secondary leading-relaxed">
+          <span className="text-text-primary">{publication.author}</span>{' '}
+          <span>({publication.year}).</span>{' '}
+          <span className="italic text-purple-light group-hover:text-purple-light/90">
+            {publication.title}
+          </span>
+          .{' '}
+          <span className="italic text-text-muted">{publication.description}</span>
+        </p>
+        <div className="mt-3 flex items-center gap-2 text-xs text-text-muted group-hover:text-purple-light transition-colors">
+          <BookOpen className="h-3.5 w-3.5 shrink-0" />
+          <span>{publication.source}</span>
+          <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity ml-auto shrink-0" />
+        </div>
+      </a>
+    </motion.li>
+  )
 }
 
 function ComingSoonModal({
@@ -100,6 +193,7 @@ function DeskCard({
   const isDownload = resource.action === 'download'
   const isExternal = resource.action === 'link'
   const isComingSoon = resource.action === 'coming-soon'
+  const isPublications = resource.action === 'publications'
   const isCenteredRow = resource.grid?.colSpan === 2
 
   const cardClass = cn(
@@ -127,7 +221,7 @@ function DeskCard({
           </span>
           {isDownload ? (
             <Download className="h-3 w-3 text-text-muted opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
-          ) : isComingSoon ? null : (
+          ) : isComingSoon || isPublications ? null : (
             <ExternalLink className="h-3 w-3 text-text-muted opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
           )}
         </div>
@@ -141,7 +235,7 @@ function DeskCard({
     </>
   )
 
-  if (isComingSoon) {
+  if (isComingSoon || isPublications) {
     return (
       <motion.button
         type="button"
@@ -184,12 +278,16 @@ export function DigitalDeskSection() {
   const [comingSoonResource, setComingSoonResource] = useState<DeskResource | null>(
     null,
   )
+  const [showPublications, setShowPublications] = useState(false)
   const { discover } = useExploration()
   const isMobile = useIsMobile()
 
   const handleResourceClick = (resource: DeskResource) => {
     if (resource.action === 'coming-soon') {
       setComingSoonResource(resource)
+    }
+    if (resource.action === 'publications') {
+      setShowPublications(true)
     }
   }
 
@@ -259,6 +357,9 @@ export function DigitalDeskSection() {
       </Container>
 
       <AnimatePresence>
+        {showPublications && (
+          <PublicationsModal onClose={() => setShowPublications(false)} />
+        )}
         {comingSoonResource && (
           <ComingSoonModal
             resource={comingSoonResource}

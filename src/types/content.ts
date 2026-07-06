@@ -69,6 +69,8 @@ export interface Project {
   coverImage: string
   images: ProjectImage[]
   tabs: Record<ProjectTab, string>
+  /** External link to a published article or paper */
+  publicationLink?: string
 }
 
 export type SkillCategory =
@@ -120,7 +122,17 @@ export interface AthleticAchievement {
   image?: string
 }
 
-export type DeskAction = 'link' | 'download' | 'coming-soon'
+export type DeskAction = 'link' | 'download' | 'coming-soon' | 'publications'
+
+export interface Publication {
+  id: string
+  author: string
+  year: string
+  title: string
+  description: string
+  source: string
+  href: string
+}
 
 export interface DeskResource {
   id: string
