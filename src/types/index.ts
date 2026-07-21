@@ -27,6 +27,7 @@ export type {
   DeskResource,
   DeskAction,
   Publication,
+  Certificate,
   SocialLink,
   ContactField,
 } from './content'

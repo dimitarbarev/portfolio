@@ -61,6 +61,7 @@ export const DESK_RESOURCES: DeskResource[] = [
     href: '#',
     category: 'research',
     action: 'publications',
+    attentionTag: 'New: my thesis article is live',
     grid: { row: 3, col: 2 },
   },
   {
@@ -70,7 +71,8 @@ export const DESK_RESOURCES: DeskResource[] = [
     icon: 'award',
     href: '#',
     category: 'professional',
-    action: 'coming-soon',
+    action: 'certifications',
+    attentionTag: 'My diploma was recently added here',
     grid: { row: 4, col: 1, colSpan: 2 },
   },
 ]

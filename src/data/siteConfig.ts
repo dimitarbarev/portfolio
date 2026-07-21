@@ -25,8 +25,8 @@ export const SITE_LINKS = {
 } as const
 
 export const SITE_CV = {
-  path: '/Dimitar_Barev_Resume.pdf',
-  downloadFilename: 'Dimitar_Barev_Resume.pdf',
+  path: '/Dimitar_Barev_Resume_July2026.pdf',
+  downloadFilename: 'Dimitar_Barev_Resume_July2026.pdf',
 } as const
 
 /** Formspree form endpoint — public form ID, not a secret. */

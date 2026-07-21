@@ -19,7 +19,12 @@ import { SectionWrapper } from '@/layouts/SectionWrapper'
 import { ScrollReveal } from '@/components/effects/ScrollReveal'
 import { DESK_RESOURCES } from '@/data/desk'
 import { PUBLICATIONS } from '@/data/publications'
-import type { DeskResource, Publication } from '@/types'
+import { CERTIFICATES } from '@/data/certificates'
+import {
+  DownloadVerificationModal,
+  type DownloadRequest,
+} from '@/components/download/DownloadVerificationModal'
+import type { Certificate, DeskResource, Publication } from '@/types'
 import { useExploration } from '@/context/ExplorationContext'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import { cn } from '@/utils/cn'
@@ -32,6 +37,23 @@ const iconMap: Record<string, typeof FileText> = {
   activity: Activity,
   'graduation-cap': GraduationCap,
   award: Award,
+}
+
+function AttentionTag({ text }: { text: string }) {
+  return (
+    <span
+      className="absolute -top-3 right-3 z-10 pointer-events-none rotate-6"
+      aria-hidden
+    >
+      <span className="relative flex flex-col items-center">
+        <span className="h-2.5 w-px bg-purple-light/50" />
+        <span className="relative mt-0.5 block max-w-[168px] rounded-sm border border-purple/35 bg-purple/15 px-3 py-2 text-center text-xs font-medium leading-snug text-purple-light shadow-[0_8px_24px_-8px_rgba(168,85,247,0.55)] backdrop-blur-sm">
+          <span className="absolute -top-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 border-l border-t border-purple/35 bg-void-elevated" />
+          <span className="relative">{text}</span>
+        </span>
+      </span>
+    </span>
+  )
 }
 
 function PublicationsModal({ onClose }: { onClose: () => void }) {
@@ -126,6 +148,118 @@ function PublicationItem({
   )
 }
 
+function CertificationsModal({
+  onClose,
+  onRequestDownload,
+}: {
+  onClose: () => void
+  onRequestDownload: (request: DownloadRequest) => void
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[90] flex items-center justify-center p-4 md:p-8"
+      onClick={onClose}
+    >
+      <div className="absolute inset-0 bg-void/90 backdrop-blur-md" />
+      <motion.div
+        initial={{ opacity: 0, y: 24, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 12, scale: 0.98 }}
+        transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-2xl max-h-[85vh] overflow-y-auto glass-strong rounded-2xl p-6 md:p-8"
+        style={{
+          boxShadow:
+            '0 40px 100px -30px rgba(168,85,247,0.2), inset 0 1px 0 rgba(255,255,255,0.08)',
+        }}
+      >
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 p-1.5 text-text-muted hover:text-text-primary transition-colors z-10"
+          aria-label="Close"
+        >
+          <X className="h-4 w-4" />
+        </button>
+
+        <div className="flex items-center gap-3 mb-6 pr-8">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-purple/15 text-purple-light shrink-0">
+            <Award className="h-5 w-5" />
+          </div>
+          <div>
+            <h3 className="font-display text-xl md:text-2xl font-semibold text-text-primary">
+              Certifications
+            </h3>
+            <p className="text-sm text-text-muted mt-0.5">
+              Diplomas, credentials & certificates
+            </p>
+          </div>
+        </div>
+
+        <ol className="space-y-4">
+          {CERTIFICATES.map((certificate, index) => (
+            <CertificateItem
+              key={certificate.id}
+              certificate={certificate}
+              index={index}
+              onRequestDownload={onRequestDownload}
+            />
+          ))}
+        </ol>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+function CertificateItem({
+  certificate,
+  index,
+  onRequestDownload,
+}: {
+  certificate: Certificate
+  index: number
+  onRequestDownload: (request: DownloadRequest) => void
+}) {
+  return (
+    <motion.li
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.08 }}
+    >
+      <button
+        type="button"
+        onClick={() =>
+          onRequestDownload({
+            href: certificate.href,
+            filename: certificate.downloadFilename,
+            label: certificate.title,
+          })
+        }
+        className="group block w-full rounded-xl border border-border-subtle p-5 text-left transition-all hover:border-purple/30 hover:bg-purple/5"
+      >
+        <p className="text-sm text-text-secondary leading-relaxed">
+          <span className="text-text-primary">{certificate.issuer}</span>{' '}
+          <span>({certificate.year}).</span>{' '}
+          <span className="italic text-purple-light group-hover:text-purple-light/90">
+            {certificate.title}
+          </span>
+          .{' '}
+          <span className="italic text-text-muted">{certificate.description}</span>
+        </p>
+        <div className="mt-3 flex items-center gap-2 text-xs text-text-muted group-hover:text-purple-light transition-colors">
+          <Download className="h-3.5 w-3.5 shrink-0" />
+          <span>Download PDF</span>
+          <span className="ml-auto shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+            {certificate.downloadFilename}
+          </span>
+        </div>
+      </button>
+    </motion.li>
+  )
+}
+
 function ComingSoonModal({
   resource,
   onClose,
@@ -183,18 +317,22 @@ function DeskCard({
   isHovered,
   onHover,
   onClick,
+  onRequestDownload,
 }: {
   resource: DeskResource
   isHovered: boolean
   onHover: (id: string | null) => void
   onClick: (resource: DeskResource) => void
+  onRequestDownload: (request: DownloadRequest) => void
 }) {
   const Icon = iconMap[resource.icon] ?? FileText
   const isDownload = resource.action === 'download'
   const isExternal = resource.action === 'link'
   const isComingSoon = resource.action === 'coming-soon'
   const isPublications = resource.action === 'publications'
+  const isCertifications = resource.action === 'certifications'
   const isCenteredRow = resource.grid?.colSpan === 2
+  const opensModal = isComingSoon || isPublications || isCertifications
 
   const cardClass = cn(
     'group flex items-center gap-4 rounded-xl p-4 transition-all duration-300 w-full',
@@ -221,7 +359,7 @@ function DeskCard({
           </span>
           {isDownload ? (
             <Download className="h-3 w-3 text-text-muted opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
-          ) : isComingSoon || isPublications ? null : (
+          ) : opensModal ? null : (
             <ExternalLink className="h-3 w-3 text-text-muted opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
           )}
         </div>
@@ -235,7 +373,7 @@ function DeskCard({
     </>
   )
 
-  if (isComingSoon || isPublications) {
+  if (opensModal || isDownload) {
     return (
       <motion.button
         type="button"
@@ -245,9 +383,20 @@ function DeskCard({
         onMouseEnter={() => onHover(resource.id)}
         onMouseLeave={() => onHover(null)}
         whileHover={{ x: 4 }}
-        onClick={() => onClick(resource)}
-        className={cardClass}
+        onClick={() => {
+          if (isDownload && resource.downloadFilename) {
+            onRequestDownload({
+              href: resource.href,
+              filename: resource.downloadFilename,
+              label: resource.label,
+            })
+            return
+          }
+          onClick(resource)
+        }}
+        className={cn(cardClass, 'relative overflow-visible')}
       >
+        {resource.attentionTag && <AttentionTag text={resource.attentionTag} />}
         {content}
       </motion.button>
     )
@@ -263,11 +412,11 @@ function DeskCard({
       onMouseLeave={() => onHover(null)}
       whileHover={{ x: 4 }}
       onClick={() => onClick(resource)}
-      download={isDownload ? resource.downloadFilename : undefined}
       target={isExternal ? '_blank' : undefined}
       rel={isExternal ? 'noopener noreferrer' : undefined}
-      className={cardClass}
+      className={cn(cardClass, resource.attentionTag && 'relative overflow-visible')}
     >
+      {resource.attentionTag && <AttentionTag text={resource.attentionTag} />}
       {content}
     </motion.a>
   )
@@ -279,6 +428,8 @@ export function DigitalDeskSection() {
     null,
   )
   const [showPublications, setShowPublications] = useState(false)
+  const [showCertifications, setShowCertifications] = useState(false)
+  const [pendingDownload, setPendingDownload] = useState<DownloadRequest | null>(null)
   const { discover } = useExploration()
   const isMobile = useIsMobile()
 
@@ -288,6 +439,9 @@ export function DigitalDeskSection() {
     }
     if (resource.action === 'publications') {
       setShowPublications(true)
+    }
+    if (resource.action === 'certifications') {
+      setShowCertifications(true)
     }
   }
 
@@ -339,6 +493,7 @@ export function DigitalDeskSection() {
                       style={desktopGridStyle}
                       className={cn(
                         grid.colSpan === 2 && 'md:flex md:justify-center',
+                        'relative overflow-visible',
                       )}
                     >
                       <DeskCard
@@ -346,6 +501,7 @@ export function DigitalDeskSection() {
                         isHovered={hoveredId === resource.id}
                         onHover={setHoveredId}
                         onClick={handleResourceClick}
+                        onRequestDownload={setPendingDownload}
                       />
                     </div>
                   )
@@ -359,6 +515,18 @@ export function DigitalDeskSection() {
       <AnimatePresence>
         {showPublications && (
           <PublicationsModal onClose={() => setShowPublications(false)} />
+        )}
+        {showCertifications && (
+          <CertificationsModal
+            onClose={() => setShowCertifications(false)}
+            onRequestDownload={setPendingDownload}
+          />
+        )}
+        {pendingDownload && (
+          <DownloadVerificationModal
+            request={pendingDownload}
+            onClose={() => setPendingDownload(null)}
+          />
         )}
         {comingSoonResource && (
           <ComingSoonModal

@@ -122,7 +122,12 @@ export interface AthleticAchievement {
   image?: string
 }
 
-export type DeskAction = 'link' | 'download' | 'coming-soon' | 'publications'
+export type DeskAction =
+  | 'link'
+  | 'download'
+  | 'coming-soon'
+  | 'publications'
+  | 'certifications'
 
 export interface Publication {
   id: string
@@ -132,6 +137,16 @@ export interface Publication {
   description: string
   source: string
   href: string
+}
+
+export interface Certificate {
+  id: string
+  title: string
+  issuer: string
+  year: string
+  description: string
+  href: string
+  downloadFilename: string
 }
 
 export interface DeskResource {
@@ -145,6 +160,8 @@ export interface DeskResource {
   /** Grid placement: row (1-based), column (1-based), optional col span */
   grid?: { row: number; col: number; colSpan?: number }
   downloadFilename?: string
+  /** Optional clothing-style callout shown on the desk card */
+  attentionTag?: string
 }
 
 export interface SocialLink {
