@@ -310,7 +310,16 @@ export function ContactSection() {
 
       <div className="mt-20 text-center">
         <p className="text-xs text-text-muted">
-          © {new Date().getFullYear()} Dimitar Barev. Crafted with precision.
+          © {new Date().getFullYear()} Dimitar Barev. Crafted with precision. Co-founder of{' '}
+          <a
+            href="https://wavsy.dev"
+            target="_blank"
+            rel="noopener"
+            className="text-text-secondary hover:text-purple-light transition-colors"
+          >
+            Wavsy
+          </a>
+          .
         </p>
       </div>
     </SectionWrapper>
