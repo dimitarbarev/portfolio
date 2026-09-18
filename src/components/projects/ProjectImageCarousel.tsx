@@ -47,7 +47,7 @@ export function ProjectImageCarousel({
     onResume: () => setIsPaused(false),
   })
 
-  const { isDragging, bindDrag } = useDragRotation({
+  const { isDragging, nodeRef } = useDragRotation({
     activeIndex,
     itemCount: count,
     onIndexChange: setIndex,
@@ -81,24 +81,21 @@ export function ProjectImageCarousel({
   if (count === 0) return null
 
   const active = images[activeIndex]!
-  const drag = bindDrag()
   const paused = isPaused || isHovered || lightboxOpen
 
   return (
     <>
       <div className={cn('relative', className)}>
         <div
+          ref={count > 1 ? nodeRef : undefined}
           className={cn(
             'group relative aspect-video w-full overflow-hidden rounded-xl border border-border-subtle bg-void-surface',
+            count > 1 && 'touch-pan-y',
             count > 1 && (isDragging ? 'cursor-grabbing' : 'cursor-grab'),
           )}
           style={{
             boxShadow: `0 24px 60px -24px ${accent}44, inset 0 1px 0 rgba(255,255,255,0.06)`,
           }}
-          onPointerDown={count > 1 ? drag.onPointerDown : undefined}
-          onPointerMove={count > 1 ? drag.onPointerMove : undefined}
-          onPointerUp={count > 1 ? drag.onPointerUp : undefined}
-          onPointerCancel={count > 1 ? drag.onPointerCancel : undefined}
           onPointerEnter={() => {
             setIsHovered(true)
             pause()

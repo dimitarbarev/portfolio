@@ -10,10 +10,10 @@ import { scrollToSection } from '@/utils/scroll'
 
 export function HeroSection() {
   return (
-    <SectionWrapper id="hero" fullHeight>
-      <div className="relative z-10 flex min-h-screen flex-col justify-center section-padding pt-24">
+    <SectionWrapper id="hero" fullHeight className="max-md:min-h-0">
+      <div className="relative z-10 flex flex-col justify-center pt-24 pb-10 md:section-padding md:pt-24">
         <Container size="wide">
-          <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-12 xl:gap-16">
+          <div className="grid items-center gap-6 lg:grid-cols-2 lg:gap-12 xl:gap-16">
             {/* Left — Hero copy */}
             <motion.div
               variants={staggerContainer}
@@ -30,7 +30,7 @@ export function HeroSection() {
 
               <motion.h1
                 variants={fadeInUp}
-                className="font-display text-4xl font-bold leading-[1.1] tracking-tight md:text-5xl lg:text-6xl xl:text-7xl"
+                className="font-display text-3xl font-bold leading-[1.1] tracking-tight md:text-5xl lg:text-6xl xl:text-7xl"
               >
                 {PLACEHOLDER_HERO.headline}
                 <br />
@@ -41,12 +41,12 @@ export function HeroSection() {
 
               <motion.p
                 variants={fadeInUp}
-                className="mt-6 max-w-lg text-lg leading-relaxed text-text-secondary md:text-xl"
+                className="mt-4 max-w-lg text-base leading-relaxed text-text-secondary md:mt-6 md:text-xl"
               >
                 {PLACEHOLDER_HERO.subheadline}
               </motion.p>
 
-              <motion.div variants={fadeInUp} className="mt-10 flex flex-wrap gap-4">
+              <motion.div variants={fadeInUp} className="mt-6 flex flex-wrap gap-3 md:mt-10 md:gap-4">
                 <Button onClick={() => scrollToSection('journey')}>
                   {PLACEHOLDER_HERO.ctaPrimary}
                 </Button>
@@ -73,7 +73,7 @@ export function HeroSection() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5, duration: 1 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+          className="mt-6 flex w-full justify-center md:absolute md:bottom-8 md:left-1/2 md:mt-0 md:-translate-x-1/2"
         >
           <motion.button
             onClick={() => scrollToSection('journey')}

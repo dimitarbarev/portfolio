@@ -67,12 +67,12 @@ export const DESK_RESOURCES: DeskResource[] = [
   {
     id: 'certifications',
     label: 'Certifications',
-    description: 'Cloud & architecture credentials',
+    description: 'Diplomas, credentials & certificates',
     icon: 'award',
     href: '#',
     category: 'professional',
     action: 'certifications',
-    attentionTag: 'My diploma was recently added here',
+    attentionTag: 'New: Fadata PL/SQL + AI certificate',
     grid: { row: 4, col: 1, colSpan: 2 },
   },
 ]

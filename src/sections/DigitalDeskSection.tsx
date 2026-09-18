@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   FileText,
@@ -10,6 +10,7 @@ import {
   Award,
   ExternalLink,
   Download,
+  Eye,
   X,
   Clock,
 } from 'lucide-react'
@@ -27,6 +28,7 @@ import {
 import type { Certificate, DeskResource, Publication } from '@/types'
 import { useExploration } from '@/context/ExplorationContext'
 import { useIsMobile } from '@/hooks/useMediaQuery'
+import { triggerFileDownload } from '@/utils/downloadFile'
 import { cn } from '@/utils/cn'
 
 const iconMap: Record<string, typeof FileText> = {
@@ -41,18 +43,33 @@ const iconMap: Record<string, typeof FileText> = {
 
 function AttentionTag({ text }: { text: string }) {
   return (
-    <span
-      className="absolute -top-3 right-3 z-10 pointer-events-none rotate-6"
-      aria-hidden
-    >
-      <span className="relative flex flex-col items-center">
-        <span className="h-2.5 w-px bg-purple-light/50" />
-        <span className="relative mt-0.5 block max-w-[168px] rounded-sm border border-purple/35 bg-purple/15 px-3 py-2 text-center text-xs font-medium leading-snug text-purple-light shadow-[0_8px_24px_-8px_rgba(168,85,247,0.55)] backdrop-blur-sm">
-          <span className="absolute -top-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 border-l border-t border-purple/35 bg-void-elevated" />
-          <span className="relative">{text}</span>
+    <>
+      <span className="sr-only">{text}</span>
+      <span
+        className="absolute -top-2.5 right-1.5 z-10 pointer-events-none md:hidden"
+        aria-hidden
+      >
+        <span className="relative flex flex-col items-center">
+          <span className="h-2 w-px bg-purple-light/55" />
+          <span className="relative mt-0.5 rotate-3 rounded-sm border border-purple/45 bg-purple/20 px-2 py-[3px] text-[9px] font-semibold uppercase tracking-[0.18em] text-purple-light shadow-[0_0_18px_-2px_rgba(168,85,247,0.75)] backdrop-blur-sm">
+            <span className="absolute -top-0.5 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rotate-45 border-l border-t border-purple/45 bg-void-elevated" />
+            <span className="relative">New</span>
+          </span>
         </span>
       </span>
-    </span>
+      <span
+        className="absolute -top-3 right-3 z-10 pointer-events-none hidden rotate-6 md:block"
+        aria-hidden
+      >
+        <span className="relative flex flex-col items-center">
+          <span className="h-2.5 w-px bg-purple-light/50" />
+          <span className="relative mt-0.5 block max-w-[168px] rounded-sm border border-purple/35 bg-purple/15 px-3 py-2 text-center text-xs font-medium leading-snug text-purple-light shadow-[0_8px_24px_-8px_rgba(168,85,247,0.55)] backdrop-blur-sm">
+            <span className="absolute -top-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 border-l border-t border-purple/35 bg-void-elevated" />
+            <span className="relative">{text}</span>
+          </span>
+        </span>
+      </span>
+    </>
   )
 }
 
@@ -148,12 +165,88 @@ function PublicationItem({
   )
 }
 
+function CertificateViewerModal({
+  certificate,
+  onClose,
+}: {
+  certificate: Certificate
+  onClose: () => void
+}) {
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [onClose])
+
+  if (!certificate.viewImage) return null
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8"
+      onClick={onClose}
+    >
+      <div className="absolute inset-0 bg-void/90 backdrop-blur-md" />
+      <motion.div
+        initial={{ opacity: 0, y: 24, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 12, scale: 0.98 }}
+        transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+        onClick={(event) => event.stopPropagation()}
+        className="relative w-full max-w-3xl glass-strong rounded-2xl p-4 md:p-5"
+        style={{
+          boxShadow:
+            '0 40px 100px -30px rgba(168,85,247,0.2), inset 0 1px 0 rgba(255,255,255,0.08)',
+        }}
+      >
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <p className="min-w-0 text-xs text-text-muted truncate">
+            {certificate.issuer} ({certificate.year})
+          </p>
+          <button
+            onClick={onClose}
+            className="p-1.5 text-text-muted hover:text-text-primary transition-colors shrink-0"
+            aria-label="Close"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <img
+          src={certificate.viewImage}
+          alt={`${certificate.title} — ${certificate.issuer}`}
+          className="w-full max-h-[72vh] object-contain rounded-lg"
+        />
+
+        <div className="mt-3 flex justify-end">
+          <button
+            type="button"
+            onClick={() =>
+              triggerFileDownload(certificate.href, certificate.downloadFilename)
+            }
+            className="inline-flex items-center gap-1.5 text-xs text-text-muted hover:text-purple-light transition-colors"
+          >
+            <Download className="h-3.5 w-3.5" />
+            Download
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  )
+}
+
 function CertificationsModal({
   onClose,
   onRequestDownload,
+  onViewCertificate,
 }: {
   onClose: () => void
   onRequestDownload: (request: DownloadRequest) => void
+  onViewCertificate: (certificate: Certificate) => void
 }) {
   return (
     <motion.div
@@ -205,6 +298,7 @@ function CertificationsModal({
               certificate={certificate}
               index={index}
               onRequestDownload={onRequestDownload}
+              onViewCertificate={onViewCertificate}
             />
           ))}
         </ol>
@@ -217,11 +311,15 @@ function CertificateItem({
   certificate,
   index,
   onRequestDownload,
+  onViewCertificate,
 }: {
   certificate: Certificate
   index: number
   onRequestDownload: (request: DownloadRequest) => void
+  onViewCertificate: (certificate: Certificate) => void
 }) {
+  const isViewable = Boolean(certificate.viewImage)
+
   return (
     <motion.li
       initial={{ opacity: 0, y: 12 }}
@@ -230,13 +328,17 @@ function CertificateItem({
     >
       <button
         type="button"
-        onClick={() =>
+        onClick={() => {
+          if (isViewable) {
+            onViewCertificate(certificate)
+            return
+          }
           onRequestDownload({
             href: certificate.href,
             filename: certificate.downloadFilename,
             label: certificate.title,
           })
-        }
+        }}
         className="group block w-full rounded-xl border border-border-subtle p-5 text-left transition-all hover:border-purple/30 hover:bg-purple/5"
       >
         <p className="text-sm text-text-secondary leading-relaxed">
@@ -249,11 +351,20 @@ function CertificateItem({
           <span className="italic text-text-muted">{certificate.description}</span>
         </p>
         <div className="mt-3 flex items-center gap-2 text-xs text-text-muted group-hover:text-purple-light transition-colors">
-          <Download className="h-3.5 w-3.5 shrink-0" />
-          <span>Download PDF</span>
-          <span className="ml-auto shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-            {certificate.downloadFilename}
-          </span>
+          {isViewable ? (
+            <>
+              <Eye className="h-3.5 w-3.5 shrink-0" />
+              <span>View certificate</span>
+            </>
+          ) : (
+            <>
+              <Download className="h-3.5 w-3.5 shrink-0" />
+              <span>Download PDF</span>
+              <span className="ml-auto shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                {certificate.downloadFilename}
+              </span>
+            </>
+          )}
         </div>
       </button>
     </motion.li>
@@ -338,6 +449,7 @@ function DeskCard({
     'group flex items-center gap-4 rounded-xl p-4 transition-all duration-300 w-full',
     'border border-transparent hover:border-purple/20 hover:bg-purple/5 cursor-pointer',
     isCenteredRow && 'md:max-w-md md:mx-auto',
+    resource.attentionTag && 'max-md:pr-14',
   )
 
   const content = (
@@ -429,6 +541,7 @@ export function DigitalDeskSection() {
   )
   const [showPublications, setShowPublications] = useState(false)
   const [showCertifications, setShowCertifications] = useState(false)
+  const [viewingCertificate, setViewingCertificate] = useState<Certificate | null>(null)
   const [pendingDownload, setPendingDownload] = useState<DownloadRequest | null>(null)
   const { discover } = useExploration()
   const isMobile = useIsMobile()
@@ -520,6 +633,13 @@ export function DigitalDeskSection() {
           <CertificationsModal
             onClose={() => setShowCertifications(false)}
             onRequestDownload={setPendingDownload}
+            onViewCertificate={setViewingCertificate}
+          />
+        )}
+        {viewingCertificate && (
+          <CertificateViewerModal
+            certificate={viewingCertificate}
+            onClose={() => setViewingCertificate(null)}
           />
         )}
         {pendingDownload && (

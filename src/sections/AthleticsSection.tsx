@@ -5,6 +5,7 @@ import { Container } from '@/components/ui/Container'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { SectionWrapper } from '@/layouts/SectionWrapper'
 import { ScrollReveal } from '@/components/effects/ScrollReveal'
+import { HorizontalSnapCarousel } from '@/components/ui/HorizontalSnapCarousel'
 import { ATHLETIC_ACHIEVEMENTS, ATHLETICS_DISCIPLINES } from '@/data/athletics'
 import type { AthleticDiscipline, AthleticAchievement } from '@/types'
 import { cn } from '@/utils/cn'
@@ -176,7 +177,7 @@ function AchievementCard({
       type="button"
       onClick={onSelect}
       className={cn(
-        'w-full text-left glass rounded-xl p-5 transition-all duration-300',
+        'h-full w-full text-left glass rounded-xl p-5 transition-all duration-300',
         isActive
           ? 'border-purple/30 glow-purple'
           : 'hover:border-border-subtle hover:bg-white/5',
@@ -275,8 +276,8 @@ export function AthleticsSection() {
           storyBeat="Growth"
         />
 
-        <div className="grid items-center gap-8 lg:grid-cols-2">
-          <ScrollReveal>
+        <div className="grid min-w-0 items-center gap-8 lg:grid-cols-2">
+          <ScrollReveal className="min-w-0">
             <div className="relative mx-auto w-full max-w-[460px] overflow-visible px-4 py-6">
               <div className="relative aspect-square w-full">
                 <div className="absolute inset-[6%] rounded-full border border-purple/10" />
@@ -297,17 +298,24 @@ export function AthleticsSection() {
             </div>
           </ScrollReveal>
 
-          <div className="space-y-3">
-            {ATHLETIC_ACHIEVEMENTS.map((achievement, i) => (
-              <ScrollReveal key={achievement.id} delay={i * 0.08}>
+          <ScrollReveal className="min-w-0">
+            <HorizontalSnapCarousel
+              ariaLabel="Athletic achievements"
+              desktop="stack"
+              activeIndex={activeIndex}
+              onIndexChange={setActiveIndex}
+              itemClassName="h-auto"
+            >
+              {ATHLETIC_ACHIEVEMENTS.map((achievement, i) => (
                 <AchievementCard
+                  key={achievement.id}
                   achievement={achievement}
                   isActive={i === activeIndex}
                   onSelect={() => setActiveIndex(i)}
                 />
-              </ScrollReveal>
-            ))}
-          </div>
+              ))}
+            </HorizontalSnapCarousel>
+          </ScrollReveal>
         </div>
       </Container>
     </SectionWrapper>

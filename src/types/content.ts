@@ -147,6 +147,8 @@ export interface Certificate {
   description: string
   href: string
   downloadFilename: string
+  /** When set, the card opens a lightbox instead of starting a download. */
+  viewImage?: string
 }
 
 export interface DeskResource {

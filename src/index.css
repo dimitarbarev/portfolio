@@ -97,6 +97,15 @@
     padding-bottom: clamp(5rem, 12vw, 8rem);
   }
 
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
   .noise-overlay {
     pointer-events: none;
     position: fixed;

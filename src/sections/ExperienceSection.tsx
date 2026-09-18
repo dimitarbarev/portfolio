@@ -6,6 +6,7 @@ import { SectionHeader } from '@/components/ui/SectionHeader'
 import { SectionWrapper } from '@/layouts/SectionWrapper'
 import { Tag } from '@/components/ui/Tag'
 import { ScrollReveal } from '@/components/effects/ScrollReveal'
+import { HorizontalSnapCarousel } from '@/components/ui/HorizontalSnapCarousel'
 import { PLACEHOLDER_EXPERIENCE } from '@/data/placeholders'
 import type { ExperienceEntry, ExperienceType } from '@/types'
 import { cn } from '@/utils/cn'
@@ -50,7 +51,7 @@ function ExperienceCard({ entry }: { entry: ExperienceEntry }) {
       whileHover={{ y: -4 }}
       transition={{ type: 'spring', stiffness: 300, damping: 26 }}
       className={cn(
-        'group relative block overflow-hidden rounded-xl p-6 md:p-8',
+        'group relative block h-full overflow-hidden rounded-xl p-5 md:p-8',
         featured ? 'backdrop-blur-2xl' : 'glass',
         linked && 'cursor-pointer',
       )}
@@ -94,7 +95,7 @@ function ExperienceCard({ entry }: { entry: ExperienceEntry }) {
           {entry.logo && (
             <div
               className={cn(
-                'flex shrink-0 items-center justify-center rounded-xl border font-bold tracking-tight transition-transform duration-300 group-hover:scale-105',
+                'hidden shrink-0 items-center justify-center rounded-xl border font-bold tracking-tight transition-transform duration-300 group-hover:scale-105 md:flex',
                 featured ? 'h-14 w-14 text-sm' : 'h-12 w-12 text-xs',
               )}
               style={{
@@ -226,12 +227,17 @@ export function ExperienceSection() {
           </div>
         </ScrollReveal>
 
-        <motion.div layout className="space-y-4">
-          {filtered.map((entry, i) => (
-            <ScrollReveal key={entry.id} delay={i * 0.06}>
-              <ExperienceCard entry={entry} />
-            </ScrollReveal>
-          ))}
+        <motion.div layout>
+          <HorizontalSnapCarousel
+            key={filter}
+            ariaLabel="Experience"
+            desktop="stack"
+            itemClassName="h-auto"
+          >
+            {filtered.map((entry) => (
+              <ExperienceCard key={entry.id} entry={entry} />
+            ))}
+          </HorizontalSnapCarousel>
         </motion.div>
       </Container>
     </SectionWrapper>

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import {
   AnimatePresence,
   motion,
@@ -10,7 +10,6 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { ScenePills } from './ScenePills'
 import { UniverseStarfield } from './UniverseStarfield'
 import { useAutoRotation } from '@/hooks/useAutoRotation'
-import { useDragRotation } from '@/hooks/useDragRotation'
 import { useIsMobile, usePrefersReducedMotion } from '@/hooks/useMediaQuery'
 import { UNIVERSE_SCENES, UNIVERSE_SCENE_COUNT } from '@/data/universeScenes'
 import { cn } from '@/utils/cn'
@@ -61,6 +60,7 @@ export function SceneShowcase() {
   const [direction, setDirection] = useState(1)
   const [isHovered, setIsHovered] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
 
   const isMobile = useIsMobile()
   const reducedMotion = usePrefersReducedMotion()
@@ -98,22 +98,21 @@ export function SceneShowcase() {
     setActiveIndex((i) => (i + 1) % UNIVERSE_SCENE_COUNT)
   }, [])
 
+  const goPrev = useCallback(() => {
+    setDirection(-1)
+    setActiveIndex((i) => (i - 1 + UNIVERSE_SCENE_COUNT) % UNIVERSE_SCENE_COUNT)
+  }, [])
+
+  const cardRef = useRef<HTMLDivElement | null>(null)
+  const swipeStartRef = useRef<{ x: number; y: number } | null>(null)
+  const didDragRef = useRef(false)
+  const draggingRef = useRef(false)
+
   const { pause, scheduleResume } = useAutoRotation({
     onTick: goNext,
     enabled: !isPaused && !isHovered,
     onPause: () => setIsPaused(true),
     onResume: () => setIsPaused(false),
-  })
-
-  const { isDragging, bindDrag, goNext: dragNext, goPrev: dragPrev } = useDragRotation({
-    activeIndex,
-    itemCount: UNIVERSE_SCENE_COUNT,
-    onIndexChange: setIndexWithDirection,
-    onDragStart: () => {
-      pause()
-      setIsPaused(true)
-    },
-    onDragEnd: () => scheduleResume(),
   })
 
   const nudge = useCallback(
@@ -127,14 +126,35 @@ export function SceneShowcase() {
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') nudge(dragPrev)
-      else if (e.key === 'ArrowRight') nudge(dragNext)
+      if (e.key === 'ArrowLeft') nudge(goPrev)
+      else if (e.key === 'ArrowRight') nudge(goNext)
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [dragPrev, dragNext, nudge])
+  }, [goPrev, goNext, nudge])
 
-  const drag = bindDrag()
+  // React's touchmove is passive, so the page can steal a swipe and cancel
+  // pointer events. Lock horizontal moves on the card itself.
+  useLayoutEffect(() => {
+    const node = cardRef.current
+    if (!node) return
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return
+      const touch = e.touches[0]
+      if (!touch) return
+      const start = swipeStartRef.current
+      if (!start) return
+      const dx = touch.clientX - start.x
+      const dy = touch.clientY - start.y
+      if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) {
+        e.preventDefault()
+      }
+    }
+
+    node.addEventListener('touchmove', onTouchMove, { passive: false })
+    return () => node.removeEventListener('touchmove', onTouchMove)
+  }, [])
 
   const updateParallax = (e: React.PointerEvent) => {
     if (lite) return
@@ -149,12 +169,12 @@ export function SceneShowcase() {
 
   return (
     <div
-      className="relative mx-auto w-full max-w-[700px]"
+      className="relative mx-auto w-full max-w-[19rem] md:max-w-[700px]"
       style={{ perspective: 1400 }}
     >
       {/* Ambient outer glow — shifts with the active accent */}
       <div
-        className="pointer-events-none absolute -inset-8 rounded-[2.5rem] opacity-70 blur-3xl"
+        className="pointer-events-none absolute -inset-4 rounded-[2.5rem] opacity-70 blur-3xl md:-inset-8"
         style={{
           background: `radial-gradient(55% 55% at 50% 42%, ${accent}66, transparent 72%)`,
           transition: 'background 1s ease',
@@ -162,30 +182,74 @@ export function SceneShowcase() {
       />
 
       <motion.div
+        ref={cardRef}
         className={cn(
-          'group relative aspect-[7/5] w-full overflow-hidden rounded-[1.75rem]',
+          'group relative aspect-[7/5] w-full overflow-hidden rounded-2xl md:rounded-[1.75rem]',
           'border border-white/12 bg-white/[0.04] backdrop-blur-xl select-none touch-pan-y',
-          isDragging ? 'cursor-grabbing' : 'cursor-grab',
+          'max-md:cursor-pointer md:cursor-grab',
+          isDragging && 'cursor-grabbing',
         )}
         style={{
-          rotateX: lite ? 0 : rotateX,
-          rotateY: lite ? 0 : rotateY,
-          transformStyle: 'preserve-3d',
+          ...(lite
+            ? {}
+            : {
+                rotateX,
+                rotateY,
+                transformStyle: 'preserve-3d' as const,
+              }),
           boxShadow:
             '0 50px 120px -40px rgba(124,58,237,0.55), 0 20px 60px -30px rgba(59,130,246,0.4), inset 0 1px 0 rgba(255,255,255,0.12)',
+          touchAction: 'pan-y',
         }}
-        onPointerDown={drag.onPointerDown}
-        onPointerMove={(e) => {
-          drag.onPointerMove(e)
-          updateParallax(e)
+        drag="x"
+        dragDirectionLock
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.18}
+        dragMomentum={false}
+        onDragStart={() => {
+          didDragRef.current = true
+          draggingRef.current = true
+          pause()
+          setIsPaused(true)
+          setIsDragging(true)
         }}
-        onPointerUp={drag.onPointerUp}
-        onPointerCancel={drag.onPointerCancel}
+        onDragEnd={(_, info) => {
+          draggingRef.current = false
+          setIsDragging(false)
+          const wentNext = info.offset.x < -40 || info.velocity.x < -250
+          const wentPrev = info.offset.x > 40 || info.velocity.x > 250
+          if (wentNext) goNext()
+          else if (wentPrev) goPrev()
+          scheduleResume()
+        }}
+        onTap={(event, info) => {
+          if (didDragRef.current) {
+            didDragRef.current = false
+            return
+          }
+          if ((event.target as HTMLElement).closest('button')) return
+          const rect = cardRef.current?.getBoundingClientRect()
+          if (!rect) return
+          const ratio = (info.point.x - rect.left) / rect.width
+          nudge(ratio < 0.38 ? goPrev : goNext)
+        }}
+        onPointerDown={(e) => {
+          didDragRef.current = false
+          swipeStartRef.current = { x: e.clientX, y: e.clientY }
+        }}
+        onPointerMove={updateParallax}
+        onPointerUp={() => {
+          swipeStartRef.current = null
+        }}
+        onPointerCancel={() => {
+          swipeStartRef.current = null
+        }}
         onPointerEnter={() => {
           setIsHovered(true)
           pause()
         }}
         onPointerLeave={() => {
+          if (draggingRef.current) return
           rawX.set(0)
           rawY.set(0)
           setIsHovered(false)
@@ -217,7 +281,7 @@ export function SceneShowcase() {
                 src={active.image}
                 alt={active.label}
                 draggable={false}
-                className="h-full w-full object-cover"
+                className="pointer-events-none h-full w-full touch-pan-y object-cover max-md:object-[center_22%]"
                 initial={{ scale: lite ? 1.04 : 1.14 }}
                 animate={{ scale: lite ? 1.02 : 1.04 }}
                 transition={{ duration: lite ? 0.6 : 9, ease: lite ? 'easeOut' : 'linear' }}
@@ -238,11 +302,11 @@ export function SceneShowcase() {
 
         {/* Top row: index + live accent dot */}
         <div
-          className="pointer-events-none absolute left-5 top-5 z-20 flex items-center gap-2"
+          className="pointer-events-none absolute left-3 top-3 z-20 flex items-center gap-2 md:left-5 md:top-5"
           style={{ transform: 'translateZ(40px)' }}
         >
           <span
-            className="rounded-full border px-2.5 py-1 text-[11px] font-semibold tracking-[0.2em] backdrop-blur-md"
+            className="rounded-full border px-2 py-0.5 text-[10px] font-semibold tracking-[0.2em] backdrop-blur-md md:px-2.5 md:py-1 md:text-[11px]"
             style={{
               color: accent,
               borderColor: `${accent}55`,
@@ -255,7 +319,7 @@ export function SceneShowcase() {
 
         {/* Overlay title + subtitle */}
         <motion.div
-          className="absolute inset-x-0 bottom-0 z-20 p-6 pb-20 sm:p-8 sm:pb-24"
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-20 p-3 pb-3 sm:p-8 sm:pb-24"
           style={{ x: lite ? 0 : textX, transform: 'translateZ(60px)' }}
         >
           <AnimatePresence mode="wait">
@@ -270,7 +334,7 @@ export function SceneShowcase() {
                 className="mb-2 inline-block h-1 w-10 rounded-full"
                 style={{ background: accent }}
               />
-              <h3 className="font-display text-3xl font-bold leading-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)] sm:text-4xl">
+              <h3 className="font-display text-xl font-bold leading-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)] sm:text-4xl">
                 {active.label}
               </h3>
               <p className="mt-1.5 text-sm font-medium tracking-wide text-white/75 sm:text-base">
@@ -293,24 +357,46 @@ export function SceneShowcase() {
           transition={{ duration: paused ? 0.3 : 8, ease: 'linear' }}
         />
 
-        {/* Edge arrows (appear on hover) */}
+        {/* Edge arrows — always visible on mobile, hover-reveal on desktop */}
         <button
           onPointerDown={(e) => e.stopPropagation()}
-          onClick={() => nudge(dragPrev)}
-          className="absolute left-3 top-1/2 z-30 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/40 text-white/80 opacity-0 backdrop-blur-md transition-all hover:bg-black/60 hover:text-white group-hover:opacity-100"
+          onPointerUp={(e) => e.stopPropagation()}
+          onClick={() => nudge(goPrev)}
+          className="absolute left-2.5 top-1/2 z-30 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/45 text-white/90 opacity-80 backdrop-blur-md transition-all hover:bg-black/60 hover:text-white md:left-3 md:h-10 md:w-10 md:opacity-0 md:group-hover:opacity-100"
           aria-label="Previous scene"
         >
-          <ChevronLeft className="h-5 w-5" />
+          <ChevronLeft className="h-4 w-4 md:h-5 md:w-5" />
         </button>
         <button
           onPointerDown={(e) => e.stopPropagation()}
-          onClick={() => nudge(dragNext)}
-          className="absolute right-3 top-1/2 z-30 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/40 text-white/80 opacity-0 backdrop-blur-md transition-all hover:bg-black/60 hover:text-white group-hover:opacity-100"
+          onPointerUp={(e) => e.stopPropagation()}
+          onClick={() => nudge(goNext)}
+          className="absolute right-2.5 top-1/2 z-30 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/45 text-white/90 opacity-80 backdrop-blur-md transition-all hover:bg-black/60 hover:text-white md:right-3 md:h-10 md:w-10 md:opacity-0 md:group-hover:opacity-100"
           aria-label="Next scene"
         >
-          <ChevronRight className="h-5 w-5" />
+          <ChevronRight className="h-4 w-4 md:h-5 md:w-5" />
         </button>
       </motion.div>
+
+      <div className="mt-3 flex flex-col items-center gap-1.5 md:hidden">
+        <div className="flex items-center gap-1.5">
+          {UNIVERSE_SCENES.map((scene, i) => (
+            <button
+              key={scene.id}
+              onClick={() => nudge(() => setIndexWithDirection(i))}
+              aria-label={`${scene.label}, ${i + 1} of ${UNIVERSE_SCENE_COUNT}`}
+              className={cn(
+                'h-1.5 rounded-full transition-all duration-300',
+                i === activeIndex ? 'w-5' : 'w-1.5 bg-white/20',
+              )}
+              style={i === activeIndex ? { background: accent } : undefined}
+            />
+          ))}
+        </div>
+        <p className="text-[10px] uppercase tracking-[0.22em] text-text-muted">
+          Swipe or tap
+        </p>
+      </div>
 
       {/* Premium pill navigation */}
       <ScenePills

@@ -13,7 +13,7 @@ function LayoutContent({ children }: MainLayoutProps) {
       <div className="noise-overlay" aria-hidden="true" />
       <CursorGlow />
       <Navbar />
-      <main>{children}</main>
+      <main className="overflow-x-clip">{children}</main>
     </div>
   )
 }

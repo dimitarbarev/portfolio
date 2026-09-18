@@ -17,6 +17,7 @@ import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Tag } from '@/components/ui/Tag'
 import { ScrollReveal } from '@/components/effects/ScrollReveal'
+import { HorizontalSnapCarousel } from '@/components/ui/HorizontalSnapCarousel'
 import { ProjectImageCarousel } from '@/components/projects/ProjectImageCarousel'
 import { PROJECTS } from '@/data/projects'
 import type { Project, ProjectTab } from '@/types'
@@ -370,16 +371,22 @@ export function ProjectLabSection() {
           storyBeat="Experience"
         />
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {PROJECTS.map((project, i) => (
-            <ScrollReveal key={project.id} delay={i * 0.1}>
+        <ScrollReveal>
+          <HorizontalSnapCarousel
+            ariaLabel="Project lab"
+            desktop="grid"
+            desktopClassName="md:grid-cols-2 lg:grid-cols-3"
+            itemClassName="h-full"
+          >
+            {PROJECTS.map((project) => (
               <ProjectCard
+                key={project.id}
                 project={project}
                 onOpen={() => setSelectedProject(project)}
               />
-            </ScrollReveal>
-          ))}
-        </div>
+            ))}
+          </HorizontalSnapCarousel>
+        </ScrollReveal>
       </Container>
 
       <AnimatePresence>
