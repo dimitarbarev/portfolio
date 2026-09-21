@@ -1,5 +1,5 @@
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
-import contactImage from '@/assets/contact/ciao-guy.png'
+import contactImage from '@/assets/contact/ciao-guy.webp'
 import { usePrefersReducedMotion } from '@/hooks/useMediaQuery'
 import { cn } from '@/utils/cn'
 
@@ -72,7 +72,11 @@ export function ContactVisual() {
           <motion.img
             src={contactImage}
             alt="Dimitar in his workspace — inviting collaboration"
+            width={1024}
+            height={682}
             draggable={false}
+            loading="lazy"
+            decoding="async"
             className="h-full w-full object-cover object-center"
             initial={false}
             animate={{ scale: reducedMotion ? 1 : 1.02 }}

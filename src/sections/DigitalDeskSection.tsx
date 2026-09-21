@@ -219,7 +219,11 @@ function CertificateViewerModal({
         <img
           src={certificate.viewImage}
           alt={`${certificate.title} — ${certificate.issuer}`}
+          width={1024}
+          height={696}
           className="w-full max-h-[72vh] object-contain rounded-lg"
+          loading="lazy"
+          decoding="async"
         />
 
         <div className="mt-3 flex justify-end">

@@ -1,10 +1,10 @@
 import type { UniverseSceneMeta } from '@/types/universe'
-import engineerImg from '@/assets/scenes/engineer.png'
-import researcherImg from '@/assets/scenes/researcher.png'
-import athleteImg from '@/assets/scenes/athlete.png'
-import speakerImg from '@/assets/scenes/speaker.png'
-import explorerImg from '@/assets/scenes/explorer.png'
-import realMeImg from '@/assets/scenes/realMe.png'
+import engineerImg from '@/assets/scenes/engineer.webp'
+import researcherImg from '@/assets/scenes/researcher.webp'
+import athleteImg from '@/assets/scenes/athlete.webp'
+import speakerImg from '@/assets/scenes/speaker.webp'
+import explorerImg from '@/assets/scenes/explorer.webp'
+import realMeImg from '@/assets/scenes/realMe.webp'
 
 export const UNIVERSE_SCENE_COUNT = 6
 

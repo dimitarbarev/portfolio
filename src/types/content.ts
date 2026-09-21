@@ -48,6 +48,8 @@ export type ProjectGlow = 'enterprise' | 'research' | 'cloud'
 export interface ProjectImage {
   src: string
   alt: string
+  width?: number
+  height?: number
 }
 
 export interface Project {

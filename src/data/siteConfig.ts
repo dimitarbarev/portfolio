@@ -4,11 +4,15 @@
  * Update this file when links or the Formspree form change.
  */
 
+/** Production domain — used for canonical, Open Graph, sitemap, and JSON-LD. */
+export const SITE_URL = 'https://dimitarbarev.com'
+
 export const SITE_SEO = {
-  title: 'Dimitar Barev | Software Engineer & AI Researcher',
+  title: 'Portfolio of Dimitar Barev | Software Engineer & AI Researcher',
   description:
-    'Personal portfolio of Dimitar Barev, Software Engineer and AI Researcher. Explore OCR benchmarking research, cloud-native projects, distributed systems, public speaking achievements, endurance sports and professional experience.',
+    'Portfolio of Dimitar Barev — software engineer and AI researcher. OCR benchmarking, cloud-native systems, and experience at ASML and Fraunhofer.',
   siteName: 'Dimitar Barev',
+  jobTitle: 'Software Engineer & AI Researcher',
   ogImagePath: '/og-image.jpg',
   ogImageWidth: 1200,
   ogImageHeight: 630,
