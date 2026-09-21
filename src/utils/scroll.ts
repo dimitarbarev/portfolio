@@ -2,7 +2,10 @@ import type { SectionId } from '@/types'
 
 export function scrollToSection(id: SectionId, offset = 80): void {
   const element = document.getElementById(id)
-  if (!element) return
+  if (!element) {
+    window.location.assign(id === 'hero' ? '/' : `/#${id}`)
+    return
+  }
 
   const top = element.getBoundingClientRect().top + window.scrollY - offset
   window.scrollTo({ top, behavior: 'smooth' })

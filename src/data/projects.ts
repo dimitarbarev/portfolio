@@ -1,15 +1,15 @@
 import type { Project } from '@/types'
 
 import asmlTdd from '@/assets/projects/asml/tdd-cycle.png'
-import asmlSystem from '@/assets/projects/asml/system-visualization.png'
-import asmlNoisyNeighbor from '@/assets/projects/asml/noisy-neighbor.png'
-import asmlSequence from '@/assets/projects/asml/sequence-diagram.png'
+import asmlSystem from '@/assets/projects/asml/system-visualization.webp'
+import asmlNoisyNeighbor from '@/assets/projects/asml/noisy-neighbor.webp'
+import asmlSequence from '@/assets/projects/asml/sequence-diagram.webp'
 
-import ocrBanner from '@/assets/projects/fraunhofer/project-banner.jpg'
-import ocrArchitecture from '@/assets/projects/fraunhofer/architecture-diagram.png'
+import ocrBanner from '@/assets/projects/fraunhofer/project-banner.webp'
+import ocrArchitecture from '@/assets/projects/fraunhofer/architecture-diagram.webp'
 
-import dimotionArchitecture from '@/assets/projects/dimotion/architecture-diagram.png'
-import dimotionPipeline from '@/assets/projects/dimotion/github-actions-pipeline.png'
+import dimotionArchitecture from '@/assets/projects/dimotion/architecture-diagram.webp'
+import dimotionPipeline from '@/assets/projects/dimotion/github-actions-pipeline.webp'
 
 export const PROJECTS: Project[] = [
   {
@@ -36,10 +36,10 @@ export const PROJECTS: Project[] = [
     glow: 'enterprise',
     coverImage: asmlSystem,
     images: [
-      { src: asmlSystem, alt: 'System visualization diagram' },
-      { src: asmlNoisyNeighbor, alt: 'Noisy Neighbor illustration' },
-      { src: asmlTdd, alt: 'TDD cycle diagram' },
-      { src: asmlSequence, alt: 'Sequence diagram' },
+      { src: asmlSystem, alt: 'System visualization diagram', width: 1052, height: 857 },
+      { src: asmlNoisyNeighbor, alt: 'Noisy Neighbor illustration', width: 509, height: 339 },
+      { src: asmlTdd, alt: 'TDD cycle diagram', width: 1024, height: 680 },
+      { src: asmlSequence, alt: 'Sequence diagram', width: 1509, height: 455 },
     ],
     tabs: {
       overview:
@@ -77,8 +77,8 @@ export const PROJECTS: Project[] = [
     glow: 'research',
     coverImage: ocrBanner,
     images: [
-      { src: ocrBanner, alt: 'OCR Benchmarking project banner' },
-      { src: ocrArchitecture, alt: 'OCR Workbench architecture diagram' },
+      { src: ocrBanner, alt: 'OCR Benchmarking project banner', width: 1105, height: 737 },
+      { src: ocrArchitecture, alt: 'OCR Workbench architecture diagram', width: 1536, height: 1024 },
     ],
     tabs: {
       overview:
@@ -121,8 +121,8 @@ export const PROJECTS: Project[] = [
     glow: 'cloud',
     coverImage: dimotionArchitecture,
     images: [
-      { src: dimotionArchitecture, alt: 'Architecture diagram' },
-      { src: dimotionPipeline, alt: 'GitHub Actions security pipeline screenshot' },
+      { src: dimotionArchitecture, alt: 'Architecture diagram', width: 1584, height: 1456 },
+      { src: dimotionPipeline, alt: 'GitHub Actions security pipeline screenshot', width: 2990, height: 1686 },
     ],
     tabs: {
       overview:

@@ -3,14 +3,14 @@ import type {
   ExperienceEntry,
   JourneyMilestone,
   SocialLink,
-} from '@/types'
+} from '../types/content'
 
 export const PLACEHOLDER_HERO = {
   headline: 'Hi, I am Dimitar!',
   headlineLine2: "That's my space!",
   headlineAccent: 'Welcome on board!',
   subheadline:
-    'Software engineer, AI researcher, endurance athlete, public speaker, and explorer.',
+    'This portfolio follows my path as a software engineer, AI researcher, endurance athlete, public speaker, and explorer.',
   ctaPrimary: 'Explore the Journey',
   ctaSecondary: 'View Projects',
 }

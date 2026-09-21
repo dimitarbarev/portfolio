@@ -1,8 +1,8 @@
 import type { AthleticAchievement, AthleticDiscipline } from '@/types'
 
-import bestEfforts from '@/assets/athletics/best-efforts.png'
-import openWaterSwim from '@/assets/athletics/open-water-swim.png'
-import brutusRun from '@/assets/athletics/brutus-run.png'
+import bestEfforts from '@/assets/athletics/best-efforts.webp'
+import openWaterSwim from '@/assets/athletics/open-water-swim.webp'
+import brutusRun from '@/assets/athletics/brutus-run.webp'
 
 export const ATHLETIC_ACHIEVEMENTS: AthleticAchievement[] = [
   {

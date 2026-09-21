@@ -19,6 +19,8 @@ import { Tag } from '@/components/ui/Tag'
 import { ScrollReveal } from '@/components/effects/ScrollReveal'
 import { HorizontalSnapCarousel } from '@/components/ui/HorizontalSnapCarousel'
 import { ProjectImageCarousel } from '@/components/projects/ProjectImageCarousel'
+import { ProjectTabContent } from '@/components/projects/ProjectTabContent'
+import { PROJECT_GLOW_STYLES, projectAccent, projectPath } from '@/components/projects/projectGlow'
 import { PROJECTS } from '@/data/projects'
 import type { Project, ProjectTab } from '@/types'
 import { cn } from '@/utils/cn'
@@ -29,69 +31,6 @@ const tabs: { id: ProjectTab; label: string; icon: typeof Layers }[] = [
   { id: 'outcomes', label: 'Outcomes', icon: Target },
   { id: 'learnings', label: 'Learnings', icon: Lightbulb },
 ]
-
-const glowStyles: Record<
-  NonNullable<Project['glow']>,
-  { accent: string; gradient: string }
-> = {
-  enterprise: {
-    accent: '#f59e0b',
-    gradient: 'linear-gradient(135deg, rgba(245,158,11,0.14) 0%, rgba(12,12,18,0.72) 55%)',
-  },
-  research: {
-    accent: '#a855f7',
-    gradient: 'linear-gradient(135deg, rgba(168,85,247,0.14) 0%, rgba(12,12,18,0.72) 55%)',
-  },
-  cloud: {
-    accent: '#06b6d4',
-    gradient: 'linear-gradient(135deg, rgba(6,182,212,0.14) 0%, rgba(12,12,18,0.72) 55%)',
-  },
-}
-
-function ProjectTabContent({ content }: { content: string }) {
-  const blocks = content.split('\n\n')
-
-  return (
-    <div className="space-y-4 text-text-secondary leading-relaxed">
-      {blocks.map((block) => {
-        const lines = block.split('\n')
-        const isList = lines.every((line) => line.startsWith('- '))
-
-        if (isList) {
-          return (
-            <ul key={block} className="space-y-2 pl-1">
-              {lines.map((line) => (
-                <li key={line} className="flex gap-3">
-                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-purple-light" />
-                  <span>{line.slice(2)}</span>
-                </li>
-              ))}
-            </ul>
-          )
-        }
-
-        if (lines.length > 1 && lines.some((line) => line.startsWith('- '))) {
-          return (
-            <div key={block} className="space-y-3">
-              {lines.map((line) =>
-                line.startsWith('- ') ? (
-                  <div key={line} className="flex gap-3 pl-1">
-                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-purple-light" />
-                    <span>{line.slice(2)}</span>
-                  </div>
-                ) : (
-                  <p key={line}>{line}</p>
-                ),
-              )}
-            </div>
-          )
-        }
-
-        return <p key={block}>{block}</p>
-      })}
-    </div>
-  )
-}
 
 function OrganizationBadge({
   project,
@@ -154,8 +93,8 @@ function ProjectCard({
   project: Project
   onOpen: () => void
 }) {
-  const accent = project.accent ?? glowStyles[project.glow ?? 'enterprise'].accent
-  const glow = project.glow ? glowStyles[project.glow] : null
+  const accent = projectAccent(project)
+  const glow = project.glow ? PROJECT_GLOW_STYLES[project.glow] : null
   const featured = project.featured
 
   return (
@@ -207,8 +146,11 @@ function ProjectCard({
           <img
             src={project.coverImage}
             alt={project.title}
+            width={project.images[0]?.width}
+            height={project.images[0]?.height}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             loading="lazy"
+            decoding="async"
           />
           <div
             className="pointer-events-none absolute inset-0 opacity-40 mix-blend-soft-light"
@@ -233,10 +175,19 @@ function ProjectCard({
           )}
         </div>
 
-        <div className="mt-4 flex items-center gap-1 text-xs text-text-muted group-hover:text-purple-light transition-colors">
+        <a
+          href={projectPath(project.id)}
+          onClick={(event) => {
+            if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+            event.preventDefault()
+            event.stopPropagation()
+            onOpen()
+          }}
+          className="mt-4 flex items-center gap-1 text-xs text-text-muted transition-colors group-hover:text-purple-light"
+        >
           <span>Open case study</span>
           <ArrowUpRight className="h-3.5 w-3.5" />
-        </div>
+        </a>
       </Card>
     </motion.div>
   )
@@ -250,7 +201,7 @@ function ProjectModal({
   onClose: () => void
 }) {
   const [activeTab, setActiveTab] = useState<ProjectTab>('overview')
-  const accent = project.accent ?? glowStyles[project.glow ?? 'enterprise'].accent
+  const accent = projectAccent(project)
 
   return (
     <motion.div

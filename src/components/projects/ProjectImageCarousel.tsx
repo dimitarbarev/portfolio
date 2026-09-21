@@ -126,7 +126,10 @@ export function ProjectImageCarousel({
                 <img
                   src={active.src}
                   alt={active.alt}
+                  width={active.width}
+                  height={active.height}
                   draggable={false}
+                  decoding="async"
                   className="h-full w-full object-contain bg-gradient-to-br from-purple/5 to-blue/5 p-2"
                 />
                 <span className="pointer-events-none absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-black/50 text-white/70 opacity-0 backdrop-blur-md transition-opacity group-hover/img:opacity-100">
@@ -255,6 +258,8 @@ export function ProjectImageCarousel({
               key={activeIndex}
               src={active.src}
               alt={active.alt}
+              width={active.width}
+              height={active.height}
               initial={{ opacity: 0, scale: 0.92 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}

@@ -20,5 +20,13 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["vite.config.ts", "seo.config.ts"]
+  "include": [
+    "vite.config.ts",
+    "seo.config.ts",
+    "src/data/siteConfig.ts",
+    "src/data/seoRoutes.ts",
+    "src/data/prerenderHtml.ts",
+    "src/data/placeholders.ts",
+    "src/types/content.ts"
+  ]
 }

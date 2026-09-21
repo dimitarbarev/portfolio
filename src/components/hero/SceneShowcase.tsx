@@ -66,6 +66,17 @@ export function SceneShowcase() {
   const reducedMotion = usePrefersReducedMotion()
   const lite = isMobile || reducedMotion
 
+  useEffect(() => {
+    const href = UNIVERSE_SCENES[0]?.image
+    if (!href || document.querySelector(`link[rel="preload"][href="${href}"]`)) return
+    const link = document.createElement('link')
+    link.rel = 'preload'
+    link.as = 'image'
+    link.href = href
+    link.fetchPriority = 'high'
+    document.head.appendChild(link)
+  }, [])
+
   // Pointer-driven parallax / tilt
   const rawX = useMotionValue(0)
   const rawY = useMotionValue(0)
@@ -281,6 +292,10 @@ export function SceneShowcase() {
                 src={active.image}
                 alt={active.label}
                 draggable={false}
+                width={1024}
+                height={576}
+                fetchPriority={active.index === 0 ? 'high' : 'low'}
+                decoding="async"
                 className="pointer-events-none h-full w-full touch-pan-y object-cover max-md:object-[center_22%]"
                 initial={{ scale: lite ? 1.04 : 1.14 }}
                 animate={{ scale: lite ? 1.02 : 1.04 }}

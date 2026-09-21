@@ -19,6 +19,6 @@ export const CERTIFICATES: Certificate[] = [
       'Oracle SQL, PL/SQL, relational database design, and applied AI.',
     href: '/certificate_Fadata_2026.pdf',
     downloadFilename: 'certificate_Fadata_2026.pdf',
-    viewImage: '/certificate_Fadata_2026.jpg',
+    viewImage: '/certificate_Fadata_2026.webp',
   },
 ]
